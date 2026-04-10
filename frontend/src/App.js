@@ -31,8 +31,6 @@ function App() {
       alert("Error submitting form");
     }
   };
-
-  const PORT = process.env.PORT || 5000;
   
   return (
     <div style={{ padding: 20 }}>
