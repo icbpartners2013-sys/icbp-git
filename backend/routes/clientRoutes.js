@@ -10,6 +10,7 @@ router.post("/onboard", async (req, res) => {
 
     res.status(201).json(savedClient);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 });

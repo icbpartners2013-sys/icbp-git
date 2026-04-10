@@ -6,7 +6,11 @@ require("dotenv").config({ path: __dirname + "/.env" });
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  }),
+);
 app.use(express.json());
 
 const clientRoutes = require("./routes/clientRoutes");
