@@ -32,6 +32,8 @@ function App() {
     }
   };
 
+  const PORT = process.env.PORT || 5000;
+  
   return (
     <div style={{ padding: 20 }}>
       <h1>New Client Onboarding</h1>
