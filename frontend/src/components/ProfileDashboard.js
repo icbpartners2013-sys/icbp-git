@@ -38,7 +38,27 @@ const ProfileDashboard = () => {
     }));
   };
 
-  const handleNestedInputChange = (section, subsection, field, value) => {
+  // For nested fields like personalInfo.fullName, businessInfo.registeredName
+  // Also handles AddressAutocomplete which passes (field, subfield, value)
+  const handleNestedInputChange = (arg1, arg2, arg3) => {
+    // If arg1 is "address", it's from AddressAutocomplete (field, subfield, value)
+    if (arg1 === "address") {
+      // This is called from AddressAutocomplete with (field, subfield, value)
+      // We need to handle this in the parent component's onChange
+      return;
+    }
+    // Otherwise it's (section, field, value)
+    setProfileData((prev) => ({
+      ...prev,
+      [arg1]: {
+        ...(prev[arg1] || {}),
+        [arg2]: arg3,
+      },
+    }));
+  };
+
+  // For deeply nested fields like services.taxServices.sarsEfilingUsername
+  const handleDeepNestedInputChange = (section, subsection, field, value) => {
     setProfileData((prev) => ({
       ...prev,
       [section]: {
@@ -46,6 +66,20 @@ const ProfileDashboard = () => {
         [subsection]: {
           ...(prev[section]?.[subsection] || {}),
           [field]: value,
+        },
+      },
+    }));
+  };
+
+  // Handler for AddressAutocomplete - takes (field, subfield, value)
+  const handleAddressChange = (section, field, subfield, value) => {
+    setProfileData((prev) => ({
+      ...prev,
+      [section]: {
+        ...(prev[section] || {}),
+        [field]: {
+          ...(prev[section]?.[field] || {}),
+          [subfield]: value,
         },
       },
     }));
@@ -267,8 +301,8 @@ const ProfileDashboard = () => {
               {/* Address Autocomplete Component */}
               <AddressAutocomplete
                 address={profileData.personalInfo?.address || {}}
-                onChange={(section, field, value) =>
-                  handleNestedInputChange("personalInfo", "address", field, value)
+                onChange={(subfield, field, value) =>
+                  handleAddressChange("personalInfo", subfield, field, value)
                 }
               />
 
@@ -441,8 +475,8 @@ const ProfileDashboard = () => {
               {/* Business Address Autocomplete Component */}
               <AddressAutocomplete
                 address={profileData.businessInfo?.address || {}}
-                onChange={(section, field, value) =>
-                  handleNestedInputChange("businessInfo", "address", field, value)
+                onChange={(subfield, field, value) =>
+                  handleAddressChange("businessInfo", subfield, field, value)
                 }
               />
 
