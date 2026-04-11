@@ -5,6 +5,8 @@ import "./ProfileDashboard.css";
 
 const ProfileDashboard = () => {
   const { user, logout, updateProfile, uploadDocument, fetchProfile, deleteDocument, toggleDarkMode } = useAuth();
+  
+  // All hooks must be at the top level, before any conditional returns
   const [activeTab, setActiveTab] = useState("dashboard");
   const [profileData, setProfileData] = useState({});
   const [documents, setDocuments] = useState({});
@@ -19,6 +21,7 @@ const ProfileDashboard = () => {
   const [selectedWidgets, setSelectedWidgets] = useState([
     'taxTimeline', 'complianceStatus', 'cashFlow', 'documentUpload', 'messagePreview', 'taxTip'
   ]);
+  const [selectedServices, setSelectedServices] = useState(["taxServices"]);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -483,8 +486,6 @@ const ProfileDashboard = () => {
     { id: "accountingAdvisory", name: "Accounting Advisory", color: "#D97706" },
     { id: "taxTransformation", name: "Tax Transformation", color: "#7C3AED" },
   ];
-
-  const [selectedServices, setSelectedServices] = useState(["taxServices"]);
 
   const toggleService = (serviceId) => {
     setSelectedServices((prev) => 
