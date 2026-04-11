@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import ForgotPassword from "./components/ForgotPassword";
 import ProfileDashboard from "./components/ProfileDashboard";
 import "./App.css";
 
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
-  const [showLogin, setShowLogin] = useState(true);
+  const [currentView, setCurrentView] = useState("login"); // "login", "register", "forgot-password"
 
   if (loading) {
     return (
@@ -39,10 +40,19 @@ const AppContent = () => {
     return <ProfileDashboard />;
   }
 
-  return showLogin ? (
-    <Login onSwitchToRegister={() => setShowLogin(false)} />
-  ) : (
-    <Register onSwitchToLogin={() => setShowLogin(true)} />
+  if (currentView === "forgot-password") {
+    return <ForgotPassword onBackToLogin={() => setCurrentView("login")} />;
+  }
+
+  if (currentView === "register") {
+    return <Register onSwitchToLogin={() => setCurrentView("login")} />;
+  }
+
+  return (
+    <Login
+      onSwitchToRegister={() => setCurrentView("register")}
+      onForgotPassword={() => setCurrentView("forgot-password")}
+    />
   );
 };
 

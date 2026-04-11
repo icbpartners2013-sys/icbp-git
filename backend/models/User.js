@@ -12,7 +12,27 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      // Password is not required for Google users
+      required: function() {
+        return !this.isGoogleUser;
+      },
+    },
+    // Google OAuth fields
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    isGoogleUser: {
+      type: Boolean,
+      default: false,
+    },
+    name: {
+      type: String,
+      trim: true,
+    },
+    picture: {
+      type: String,
     },
     profile: {
       // Personal Information (Core KYC)
@@ -148,6 +168,25 @@ const UserSchema = new mongoose.Schema(
     isProfileComplete: {
       type: Boolean,
       default: false,
+    },
+    // UI Preferences
+    uiPreferences: {
+      darkMode: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    // Entity Management (for clients with multiple businesses)
+    entities: [{
+      name: String,
+      registrationNumber: String,
+      isActive: {
+        type: Boolean,
+        default: true,
+      },
+    }],
+    currentEntity: {
+      type: mongoose.Schema.Types.ObjectId,
     },
   },
   { timestamps: true },

@@ -178,3 +178,78 @@
 .link-button:hover::after {
   width: 100%;
 }
+
+.forgot-password-row {
+  text-align: right;
+  margin-top: -10px;
+}
+
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: #02255A;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+  color: #BF080D;
+  text-decoration: underline;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.divider span {
+  padding: 0 16px;
+}
+
+.google-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.google-button:hover {
+  border-color: #02255A;
+  background: #F5F5F0;
+  box-shadow: 0 4px 12px rgba(2, 37, 90, 0.1);
+}
+
+.google-icon {
+  flex-shrink: 0;
+}
+
+.auth-description {
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}

@@ -146,6 +146,80 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Google Sign-In
+  const googleSignIn = async (googleUser) => {
+    try {
+      const profile = googleUser.getBasicProfile();
+      const response = await axios.post(`${API_URL}/auth/google-auth`, {
+        email: profile.getEmail(),
+        googleId: profile.getId(),
+        name: profile.getName(),
+        picture: profile.getImageUrl(),
+      });
+      const { token: newToken, user: userData } = response.data;
+      localStorage.setItem("token", newToken);
+      setToken(newToken);
+      setUser(userData);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || "Google sign-in failed",
+      };
+    }
+  };
+
+  // Forgot Password
+  const forgotPassword = async (email) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || "Forgot password failed",
+      };
+    }
+  };
+
+  // Reset Password
+  const resetPassword = async (token, newPassword) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/reset-password`, {
+        token,
+        newPassword,
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || "Reset password failed",
+      };
+    }
+  };
+
+  // Toggle Dark Mode
+  const toggleDarkMode = async () => {
+    try {
+      const response = await axios.put(`${API_URL}/profile/update`, {
+        data: { uiPreferences: { darkMode: !user?.uiPreferences?.darkMode } }
+      });
+      if (user) {
+        setUser({
+          ...user,
+          uiPreferences: { darkMode: !user.uiPreferences?.darkMode }
+        });
+      }
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || "Toggle dark mode failed",
+      };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -158,6 +232,10 @@ export const AuthProvider = ({ children }) => {
         uploadDocument,
         fetchProfile,
         deleteDocument,
+        googleSignIn,
+        forgotPassword,
+        resetPassword,
+        toggleDarkMode,
         isAuthenticated: !!token,
       }}
     >
