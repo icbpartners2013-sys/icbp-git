@@ -1,3 +1,9 @@
+/* ICBP Color Scheme:
+   Primary: #02255A (Deep Navy Blue)
+   Accent: #BF080D (Deep Red)
+   Neutral: #F5F5F0 (Warm Off-White)
+*/
+
 * {
   margin: 0;
   padding: 0;
@@ -10,6 +16,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #F5F5F0;
 }
 
 .loading-screen {
@@ -18,16 +25,22 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  gap: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  gap: 24px;
+  background: linear-gradient(135deg, #02255A 0%, #0a3a7a 50%, #BF080D 100%);
+}
+
+.loading-screen p {
   color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(255, 255, 255, 0.3);
-  border-top: 5px solid white;
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 255, 255, 0.2);
+  border-top: 6px solid white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
