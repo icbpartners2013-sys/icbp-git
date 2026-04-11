@@ -13,24 +13,12 @@ const AppContent = () => {
   if (loading) {
     return (
       <div className="loading-screen">
-        {/* Modern Logo Animation */}
-        <div className="loading-logo">
-          <div className="loading-logo-square"></div>
-        </div>
-
-        {/* Loading Text */}
-        <div className="loading-text">Loading</div>
-
-        {/* Progress Bar */}
-        <div className="loading-progress">
-          <div className="loading-progress-bar"></div>
-        </div>
-
-        {/* Animated Dots */}
-        <div className="loading-dots">
-          <div className="loading-dot"></div>
-          <div className="loading-dot"></div>
-          <div className="loading-dot"></div>
+        {/* Pulse Rings Animation */}
+        <div className="pulse-rings">
+          <div className="pulse-ring"></div>
+          <div className="pulse-ring"></div>
+          <div className="pulse-ring"></div>
+          <div className="pulse-center"></div>
         </div>
       </div>
     );
