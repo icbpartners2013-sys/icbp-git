@@ -532,7 +532,7 @@ const ProfileDashboard = () => {
                     type="text"
                     value={profileData.services?.taxServices?.sarsEfilingUsername || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "taxServices",
                         "sarsEfilingUsername",
@@ -547,7 +547,7 @@ const ProfileDashboard = () => {
                   <textarea
                     value={profileData.services?.taxServices?.incomeSources || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "taxServices",
                         "incomeSources",
@@ -563,7 +563,7 @@ const ProfileDashboard = () => {
                   <textarea
                     value={profileData.services?.taxServices?.directorsShareholders || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "taxServices",
                         "directorsShareholders",
@@ -718,7 +718,7 @@ const ProfileDashboard = () => {
                       type="checkbox"
                       checked={profileData.services?.cipcCompliance?.beneficialOwnershipDeclaration || false}
                       onChange={(e) =>
-                        handleNestedInputChange(
+                        handleDeepNestedInputChange(
                           "services",
                           "cipcCompliance",
                           "beneficialOwnershipDeclaration",
@@ -735,7 +735,7 @@ const ProfileDashboard = () => {
                       type="checkbox"
                       checked={profileData.services?.cipcCompliance?.powerOfAttorney || false}
                       onChange={(e) =>
-                        handleNestedInputChange(
+                        handleDeepNestedInputChange(
                           "services",
                           "cipcCompliance",
                           "powerOfAttorney",
@@ -752,7 +752,7 @@ const ProfileDashboard = () => {
                       type="checkbox"
                       checked={profileData.services?.cipcCompliance?.latestAFS || false}
                       onChange={(e) =>
-                        handleNestedInputChange(
+                        handleDeepNestedInputChange(
                           "services",
                           "cipcCompliance",
                           "latestAFS",
@@ -832,7 +832,7 @@ const ProfileDashboard = () => {
                     type="number"
                     value={profileData.services?.payrollServices?.totalEmployees || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "payrollServices",
                         "totalEmployees",
@@ -847,7 +847,7 @@ const ProfileDashboard = () => {
                   <select
                     value={profileData.services?.payrollServices?.payFrequency || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "payrollServices",
                         "payFrequency",
@@ -867,7 +867,7 @@ const ProfileDashboard = () => {
                     type="text"
                     value={profileData.services?.payrollServices?.standardWorkingHours || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "payrollServices",
                         "standardWorkingHours",
@@ -883,7 +883,7 @@ const ProfileDashboard = () => {
                     type="text"
                     value={profileData.services?.payrollServices?.existingPayrollSoftware || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "payrollServices",
                         "existingPayrollSoftware",
@@ -962,7 +962,7 @@ const ProfileDashboard = () => {
                   <select
                     value={profileData.services?.accountingAdvisory?.preferredSoftware?.[0] || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "accountingAdvisory",
                         "preferredSoftware",
@@ -983,7 +983,7 @@ const ProfileDashboard = () => {
                     type="number"
                     value={profileData.services?.accountingAdvisory?.numberOfBankAccounts || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "accountingAdvisory",
                         "numberOfBankAccounts",
@@ -999,7 +999,7 @@ const ProfileDashboard = () => {
                     type="number"
                     value={profileData.services?.accountingAdvisory?.numberOfCreditCards || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "accountingAdvisory",
                         "numberOfCreditCards",
@@ -1014,7 +1014,7 @@ const ProfileDashboard = () => {
                   <textarea
                     value={profileData.services?.accountingAdvisory?.currentPainPoints || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "accountingAdvisory",
                         "currentPainPoints",
@@ -1079,7 +1079,7 @@ const ProfileDashboard = () => {
                   <select
                     value={profileData.services?.taxTransformation?.currentTaxWorkflow || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "taxTransformation",
                         "currentTaxWorkflow",
@@ -1099,7 +1099,7 @@ const ProfileDashboard = () => {
                     type="text"
                     value={profileData.services?.taxTransformation?.globalFootprint || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "taxTransformation",
                         "globalFootprint",
@@ -1114,7 +1114,7 @@ const ProfileDashboard = () => {
                   <textarea
                     value={profileData.services?.taxTransformation?.carbonFootprintMetrics || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "taxTransformation",
                         "carbonFootprintMetrics",
@@ -1130,7 +1130,7 @@ const ProfileDashboard = () => {
                   <textarea
                     value={profileData.services?.taxTransformation?.boardDiversity || ""}
                     onChange={(e) =>
-                      handleNestedInputChange(
+                      handleDeepNestedInputChange(
                         "services",
                         "taxTransformation",
                         "boardDiversity",
