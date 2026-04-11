@@ -40,7 +40,7 @@
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: white;
+  background: #F5F5F0;
 }
 
 .address-form .form-group input:focus {
