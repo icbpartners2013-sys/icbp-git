@@ -70,14 +70,11 @@ const ProfileDashboard = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Store the file reference in state (will be uploaded on save)
+    // Store the file name in state (will be uploaded on save)
     setDocuments((prev) => ({
       ...prev,
       [documentType]: file.name,
     }));
-
-    // Reset file input
-    e.target.value = "";
   };
 
   const handleDeleteDocument = (documentType) => {
