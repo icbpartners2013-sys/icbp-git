@@ -5,7 +5,7 @@ import "./ProfileDashboard.css";
 
 const ProfileDashboard = () => {
   const { user, logout, updateProfile, uploadDocument, fetchProfile, deleteDocument, toggleDarkMode } = useAuth();
-  const [activeTab, setActiveTab] = useState("personal");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [profileData, setProfileData] = useState({});
   const [documents, setDocuments] = useState({});
   const [loading, setLoading] = useState(true);
@@ -15,6 +15,10 @@ const ProfileDashboard = () => {
   const [messageTimeout, setMessageTimeout] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showEntityModal, setShowEntityModal] = useState(false);
+  const [showWidgetGallery, setShowWidgetGallery] = useState(false);
+  const [selectedWidgets, setSelectedWidgets] = useState([
+    'taxTimeline', 'complianceStatus', 'cashFlow', 'documentUpload', 'messagePreview', 'taxTip'
+  ]);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -41,16 +45,10 @@ const ProfileDashboard = () => {
     }));
   };
 
-  // For nested fields like personalInfo.fullName, businessInfo.registeredName
-  // Also handles AddressAutocomplete which passes (field, subfield, value)
   const handleNestedInputChange = (arg1, arg2, arg3) => {
-    // If arg1 is "address", it's from AddressAutocomplete (field, subfield, value)
     if (arg1 === "address") {
-      // This is called from AddressAutocomplete with (field, subfield, value)
-      // We need to handle this in the parent component's onChange
       return;
     }
-    // Otherwise it's (section, field, value)
     setProfileData((prev) => ({
       ...prev,
       [arg1]: {
@@ -60,7 +58,6 @@ const ProfileDashboard = () => {
     }));
   };
 
-  // For deeply nested fields like services.taxServices.sarsEfilingUsername
   const handleDeepNestedInputChange = (section, subsection, field, value) => {
     setProfileData((prev) => ({
       ...prev,
@@ -74,7 +71,6 @@ const ProfileDashboard = () => {
     }));
   };
 
-  // Handler for AddressAutocomplete - takes (field, subfield, value)
   const handleAddressChange = (section, field, subfield, value) => {
     setProfileData((prev) => ({
       ...prev,
@@ -106,8 +102,6 @@ const ProfileDashboard = () => {
   const handleFileUpload = (e, documentType) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Store the file name in state (will be uploaded on save)
     setDocuments((prev) => ({
       ...prev,
       [documentType]: file.name,
@@ -115,7 +109,6 @@ const ProfileDashboard = () => {
   };
 
   const handleDeleteDocument = (documentType) => {
-    // Remove from local state (will be deleted from DB on save)
     setDocuments((prev) => {
       const updated = { ...prev };
       delete updated[documentType];
@@ -124,14 +117,10 @@ const ProfileDashboard = () => {
   };
 
   const showMessage = (type, text) => {
-    // Clear any existing timeout
     if (messageTimeout) {
       clearTimeout(messageTimeout);
     }
-
     setMessage({ type, text });
-
-    // Auto-dismiss after 3 seconds for success messages
     if (type === "success") {
       const timeout = setTimeout(() => {
         setMessage({ type: "", text: "" });
@@ -144,16 +133,308 @@ const ProfileDashboard = () => {
     logout();
   };
 
+  // Widget definitions
+  const widgetDefinitions = [
+    { id: 'taxTimeline', name: 'Tax Timeline', category: 'Tax & Compliance', size: 'medium' },
+    { id: 'taxLiability', name: 'Tax Liability Gauge', category: 'Tax & Compliance', size: 'small' },
+    { id: 'complianceStatus', name: 'Compliance Status', category: 'Tax & Compliance', size: 'small' },
+    { id: 'cashFlow', name: 'Cash Flow Sparkline', category: 'Financial Snapshot', size: 'medium' },
+    { id: 'topExpenses', name: 'Top Expenses', category: 'Financial Snapshot', size: 'small' },
+    { id: 'accountsReceivable', name: 'Accounts Receivable/Payable', category: 'Financial Snapshot', size: 'medium' },
+    { id: 'documentUpload', name: 'Document Upload Box', category: 'Document & Workflow', size: 'small' },
+    { id: 'pendingSignatures', name: 'Pending Signatures', category: 'Document & Workflow', size: 'small' },
+    { id: 'recentDownloads', name: 'Recent Downloads', category: 'Document & Workflow', size: 'small' },
+    { id: 'messagePreview', name: 'Message Preview', category: 'Communication & Support', size: 'small' },
+    { id: 'serviceProgress', name: 'Service Progress Tracker', category: 'Communication & Support', size: 'small' },
+    { id: 'bookCall', name: 'Book a Call', category: 'Communication & Support', size: 'small' },
+    { id: 'taxTip', name: 'Tax Tip of the Week', category: 'Educational', size: 'small' },
+    { id: 'videoHub', name: 'Video Hub', category: 'Educational', size: 'small' },
+  ];
+
+  const toggleWidget = (widgetId) => {
+    setSelectedWidgets((prev) => 
+      prev.includes(widgetId) 
+        ? prev.filter(id => id !== widgetId)
+        : [...prev, widgetId]
+    );
+  };
+
+  const renderWidget = (widgetId) => {
+    const widget = widgetDefinitions.find(w => w.id === widgetId);
+    if (!widget) return null;
+
+    const sizeClass = widget.size === 'large' ? 'widget-large' : widget.size === 'medium' ? 'widget-medium' : 'widget-small';
+
+    switch(widgetId) {
+      case 'taxTimeline':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>📅 Tax Timeline</h4>
+            </div>
+            <div className="widget-content">
+              <div className="timeline-item">
+                <span className="timeline-date">15 Apr</span>
+                <span className="timeline-event">VAT Return Q1</span>
+              </div>
+              <div className="timeline-item">
+                <span className="timeline-date">31 May</span>
+                <span className="timeline-event">Provisional Tax</span>
+              </div>
+              <div className="timeline-item">
+                <span className="timeline-date">30 Jun</span>
+                <span className="timeline-event">Annual Financials</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'taxLiability':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>💰 Tax Liability</h4>
+            </div>
+            <div className="widget-content">
+              <div className="gauge-container">
+                <div className="gauge">
+                  <div className="gauge-fill" style={{ width: '65%' }}></div>
+                </div>
+                <div className="gauge-labels">
+                  <span>R45,000</span>
+                  <span>Estimated: R69,000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'complianceStatus':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>✅ Compliance Status</h4>
+            </div>
+            <div className="widget-content">
+              <div className="traffic-light green">
+                <span className="light"></span>
+                <span>All Clear</span>
+              </div>
+              <p className="status-text">All filings up to date</p>
+            </div>
+          </div>
+        );
+      case 'cashFlow':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>📊 Cash Flow</h4>
+            </div>
+            <div className="widget-content">
+              <div className="sparkline">
+                <div className="sparkline-bar" style={{ height: '40%' }}></div>
+                <div className="sparkline-bar" style={{ height: '60%' }}></div>
+                <div className="sparkline-bar" style={{ height: '45%' }}></div>
+                <div className="sparkline-bar" style={{ height: '75%' }}></div>
+                <div className="sparkline-bar" style={{ height: '55%' }}></div>
+                <div className="sparkline-bar" style={{ height: '85%' }}></div>
+              </div>
+              <div className="sparkline-labels">
+                <span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'topExpenses':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>📈 Top Expenses</h4>
+            </div>
+            <div className="widget-content">
+              <div className="expense-item">
+                <span className="expense-label">Payroll</span>
+                <span className="expense-value">45%</span>
+              </div>
+              <div className="expense-item">
+                <span className="expense-label">Rent</span>
+                <span className="expense-value">25%</span>
+              </div>
+              <div className="expense-item">
+                <span className="expense-label">Marketing</span>
+                <span className="expense-value">15%</span>
+              </div>
+              <div className="expense-item">
+                <span className="expense-label">Other</span>
+                <span className="expense-value">15%</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'accountsReceivable':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>💳 A/R & A/P</h4>
+            </div>
+            <div className="widget-content">
+              <div className="account-balance receivable">
+                <span className="balance-label">Receivable</span>
+                <span className="balance-value">R125,000</span>
+              </div>
+              <div className="account-balance payable">
+                <span className="balance-label">Payable</span>
+                <span className="balance-value">R78,000</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'documentUpload':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>📁 Quick Upload</h4>
+            </div>
+            <div className="widget-content">
+              <div className="upload-dropzone">
+                <div className="upload-icon">☁️</div>
+                <p>Drop files here or click to browse</p>
+                <input type="file" className="upload-input" />
+              </div>
+            </div>
+          </div>
+        );
+      case 'pendingSignatures':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>✍️ Pending Signatures</h4>
+            </div>
+            <div className="widget-content">
+              <div className="signature-item">
+                <span>2024 Tax Return</span>
+                <button className="action-btn">Sign</button>
+              </div>
+              <div className="signature-item">
+                <span>Engagement Letter</span>
+                <button className="action-btn">Sign</button>
+              </div>
+            </div>
+          </div>
+        );
+      case 'recentDownloads':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>📥 Recent Downloads</h4>
+            </div>
+            <div className="widget-content">
+              <div className="download-item">
+                <span>📄 Q1 2024 Financials</span>
+              </div>
+              <div className="download-item">
+                <span>📄 2023 Tax Return</span>
+              </div>
+              <div className="download-item">
+                <span>📄 VAT Certificate</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'messagePreview':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>💬 Message Preview</h4>
+            </div>
+            <div className="widget-content">
+              <div className="message-snippet">
+                <div className="message-from">From: Sarah (Accountant)</div>
+                <p className="message-text">Your 2024 tax return is ready for review. Please check the Documents tab...</p>
+                <span className="message-time">2 hours ago</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'serviceProgress':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>📋 Service Progress</h4>
+            </div>
+            <div className="widget-content">
+              <div className="progress-item">
+                <span>Year-End Accounts</span>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: '75%' }}></div>
+                </div>
+                <span className="progress-text">75%</span>
+              </div>
+              <div className="progress-item">
+                <span>Tax Return</span>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: '90%' }}></div>
+                </div>
+                <span className="progress-text">90%</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 'bookCall':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>📞 Book a Call</h4>
+            </div>
+            <div className="widget-content">
+              <button className="book-call-btn">
+                Schedule Appointment
+              </button>
+              <p className="book-hint">Quick 15-min consultation</p>
+            </div>
+          </div>
+        );
+      case 'taxTip':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>💡 Tax Tip of the Week</h4>
+            </div>
+            <div className="widget-content">
+              <div className="tip-content">
+                <p>Did you know? You can claim home office expenses if you work from home regularly. Keep track of your utility bills and internet costs!</p>
+              </div>
+            </div>
+          </div>
+        );
+      case 'videoHub':
+        return (
+          <div key={widgetId} className={`widget ${sizeClass}`}>
+            <div className="widget-header">
+              <h4>🎥 Video Hub</h4>
+            </div>
+            <div className="widget-content">
+              <div className="video-thumbnail">
+                <div className="play-icon">▶</div>
+                <span>2024 Tax Changes Explained</span>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   if (loading) {
     return (
-      <div className="dashboard-loading">
-        <div className="spinner"></div>
-        <p>Loading profile...</p>
+      <div className="dashboard-container">
+        <div className="dashboard-loading">
+          <div className="spinner"></div>
+          <p>Loading profile...</p>
+        </div>
       </div>
     );
   }
 
-  // Calculate progress for each tab
   const calculateProgress = (tabId) => {
     const sections = {
       personal: profileData.personalInfo || {},
@@ -185,22 +466,32 @@ const ProfileDashboard = () => {
   };
 
   const tabs = [
-    { id: "personal", label: "Personal Information", group: "Profile" },
-    { id: "business", label: "Business Information", group: "Profile" },
-    { id: "taxServices", label: "Tax Services", group: "Services & Compliance" },
-    { id: "cipcCompliance", label: "CIPC Compliance", group: "Services & Compliance" },
-    { id: "payroll", label: "Payroll Services", group: "Services & Compliance" },
-    { id: "accounting", label: "Accounting Advisory", group: "Services & Compliance" },
-    { id: "taxTransformation", label: "Tax Transformation", group: "Services & Compliance" },
-    { id: "banking", label: "Banking Details", group: "Profile" },
-    { id: "documents", label: "Document Uploads", group: "File Center" },
+    { id: "dashboard", label: "Dashboard", icon: "📊" },
+    { id: "documents", label: "FileVault", icon: "📁" },
+    { id: "reports", label: "Reports", icon: "📈" },
+    { id: "tasks", label: "Tasks", icon: "✅" },
+    { id: "messages", label: "Messages", icon: "💬" },
+    { id: "onboarding", label: "Onboarding", icon: "🚀" },
+    { id: "taxcalendar", label: "Tax Calendar", icon: "📅" },
+    { id: "guidelines", label: "Guidelines", icon: "📖" },
   ];
 
-  // Group tabs by category
-  const tabGroups = {
-    "Profile": tabs.filter(tab => tab.group === "Profile"),
-    "Services & Compliance": tabs.filter(tab => tab.group === "Services & Compliance"),
-    "File Center": tabs.filter(tab => tab.group === "File Center")
+  const serviceOptions = [
+    { id: "taxServices", name: "Tax Services", color: "#02255A" },
+    { id: "cipcCompliance", name: "CIPC Compliance", color: "#BF080D" },
+    { id: "payrollServices", name: "Payroll Services", color: "#059669" },
+    { id: "accountingAdvisory", name: "Accounting Advisory", color: "#D97706" },
+    { id: "taxTransformation", name: "Tax Transformation", color: "#7C3AED" },
+  ];
+
+  const [selectedServices, setSelectedServices] = useState(["taxServices"]);
+
+  const toggleService = (serviceId) => {
+    setSelectedServices((prev) => 
+      prev.includes(serviceId) && prev.length > 1
+        ? prev.filter(id => id !== serviceId)
+        : [...prev.filter(id => id !== serviceId), serviceId]
+    );
   };
 
   return (
@@ -310,1240 +601,438 @@ const ProfileDashboard = () => {
         </div>
       </header>
 
-      <div className="dashboard-content">
-        <nav className="tabs-nav">
-          {Object.entries(tabGroups).map(([groupName, groupTabs]) => (
-            <div key={groupName} className="tab-group">
-              <div className="tab-group-label">{groupName}</div>
-              <div className="tab-group-tabs">
-                {groupTabs.map((tab) => {
-                  const progress = calculateProgress(tab.id);
-                  return (
-                    <button
-                      key={tab.id}
-                      className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-                      onClick={() => setActiveTab(tab.id)}
-                    >
-                      <span className="tab-label">{tab.label}</span>
-                      <div className="tab-progress">
-                        <div 
-                          className="tab-progress-bar" 
-                          style={{ width: `${progress}%` }}
-                        ></div>
-                      </div>
-                      <span className="tab-progress-text">{progress}%</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+      <div className="main-layout">
+        <nav className="sidebar-nav">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`sidebar-tab ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="tab-icon">{tab.icon}</span>
+              <span className="tab-label">{tab.label}</span>
+            </button>
           ))}
         </nav>
 
-        <main className="tab-content">
+        <div className="dashboard-content">
           {message.text && (
             <div className={`message ${message.type}`}>{message.text}</div>
           )}
 
-          {activeTab === "personal" && (
-            <div className="form-section">
-              <h2>Personal Information (Core KYC)</h2>
-              <p className="section-description">
-                Complete these fields to satisfy FICA and basic record-keeping
-                requirements.
-              </p>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Full Names</label>
-                  <input
-                    type="text"
-                    value={profileData.personalInfo?.fullName || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "personalInfo",
-                        "fullName",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter your full names"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>ID/Passport Number</label>
-                  <input
-                    type="text"
-                    value={profileData.personalInfo?.idPassportNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "personalInfo",
-                        "idPassportNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter ID or Passport number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Nationality</label>
-                  <input
-                    type="text"
-                    value={profileData.personalInfo?.nationality || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "personalInfo",
-                        "nationality",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter nationality"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Marital Status</label>
-                  <select
-                    value={profileData.personalInfo?.maritalStatus || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "personalInfo",
-                        "maritalStatus",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="">Select status</option>
-                    <option value="Single">Single</option>
-                    <option value="Married">Married</option>
-                    <option value="Divorced">Divorced</option>
-                    <option value="Widowed">Widowed</option>
-                  </select>
-                </div>
-                <div className="form-group full-width">
-                  <label>Occupation</label>
-                  <input
-                    type="text"
-                    value={profileData.personalInfo?.occupation || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "personalInfo",
-                        "occupation",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter occupation"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Income Tax Number</label>
-                  <input
-                    type="text"
-                    value={profileData.personalInfo?.incomeTaxNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "personalInfo",
-                        "incomeTaxNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter income tax number"
-                  />
-                </div>
+          {activeTab === "dashboard" && (
+            <div className="dashboard-tab">
+              <div className="dashboard-header-section">
+                <h2>Dashboard Overview</h2>
+                <button 
+                  className="widget-gallery-btn"
+                  onClick={() => setShowWidgetGallery(!showWidgetGallery)}
+                >
+                  🎨 Widget Gallery
+                </button>
               </div>
 
-              {/* Address Autocomplete Component */}
-              <AddressAutocomplete
-                address={profileData.personalInfo?.address || {}}
-                onChange={(subfield, field, value) =>
-                  handleAddressChange("personalInfo", subfield, field, value)
-                }
-              />
+              {showWidgetGallery && (
+                <div className="widget-gallery">
+                  <h3>Customize Your Dashboard</h3>
+                  <div className="widget-categories">
+                    {['Tax & Compliance', 'Financial Snapshot', 'Document & Workflow', 'Communication & Support', 'Educational'].map(category => (
+                      <div key={category} className="widget-category">
+                        <h4>{category}</h4>
+                        <div className="widget-options">
+                          {widgetDefinitions.filter(w => w.category === category).map(widget => (
+                            <label key={widget.id} className="widget-option">
+                              <input
+                                type="checkbox"
+                                checked={selectedWidgets.includes(widget.id)}
+                                onChange={() => toggleWidget(widget.id)}
+                              />
+                              <span>{widget.name}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              <button
-                className="save-button"
-                onClick={() => handleSave("personalInfo")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          )}
-
-          {activeTab === "business" && (
-            <div className="form-section">
-              <h2>Business Information</h2>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Registered Name</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.registeredName || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "registeredName",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter registered company name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Trading Name</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.tradingName || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "tradingName",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter trading name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Company Registration Number</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.companyRegistrationNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "companyRegistrationNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter company registration number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>VAT Number</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.vatNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "vatNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter VAT number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>PAYE Number</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.payeNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "payeNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter PAYE number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>UIF Number</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.uifNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "uifNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter UIF number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>SDL Number</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.sdlNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "sdlNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter SDL number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Annual Turnover</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.annualTurnover || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "annualTurnover",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter annual turnover"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>PI Score</label>
-                  <input
-                    type="text"
-                    value={profileData.businessInfo?.piScore || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "piScore",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter Public Interest Score"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Number of Employees</label>
-                  <input
-                    type="number"
-                    value={profileData.businessInfo?.numberOfEmployees || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "numberOfEmployees",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter number of employees"
-                  />
-                </div>
+              <div className="widget-grid">
+                {selectedWidgets.map(widgetId => renderWidget(widgetId))}
               </div>
-
-              {/* Business Address Autocomplete Component */}
-              <AddressAutocomplete
-                address={profileData.businessInfo?.address || {}}
-                onChange={(subfield, field, value) =>
-                  handleAddressChange("businessInfo", subfield, field, value)
-                }
-              />
-
-              <div className="form-grid">
-                <div className="form-group full-width">
-                  <label>Nature of Business</label>
-                  <textarea
-                    value={profileData.businessInfo?.natureOfBusiness || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "natureOfBusiness",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Describe the nature of your business"
-                    rows={3}
-                  />
-                </div>
-                <div className="form-group full-width">
-                  <label>Director Changes</label>
-                  <textarea
-                    value={profileData.businessInfo?.directorChanges || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "directorChanges",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Details of any director changes"
-                    rows={3}
-                  />
-                </div>
-              </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("businessInfo")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          )}
-
-          {activeTab === "taxServices" && (
-            <div className="form-section">
-              <h2>Tax Services Information</h2>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>SARS eFiling Username</label>
-                  <input
-                    type="text"
-                    value={profileData.services?.taxServices?.sarsEfilingUsername || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "taxServices",
-                        "sarsEfilingUsername",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter SARS eFiling username"
-                  />
-                </div>
-                <div className="form-group full-width">
-                  <label>List of Income Sources (Local and Foreign)</label>
-                  <textarea
-                    value={profileData.services?.taxServices?.incomeSources || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "taxServices",
-                        "incomeSources",
-                        e.target.value
-                      )
-                    }
-                    placeholder="List all income sources"
-                    rows={4}
-                  />
-                </div>
-                <div className="form-group full-width">
-                  <label>Directors/Shareholders (for Business)</label>
-                  <textarea
-                    value={profileData.services?.taxServices?.directorsShareholders || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "taxServices",
-                        "directorsShareholders",
-                        e.target.value
-                      )
-                    }
-                    placeholder="List all directors and shareholders"
-                    rows={4}
-                  />
-                </div>
-              </div>
-              <h3>Document Uploads for Tax Services</h3>
-              <div className="upload-section">
-                <div className="upload-item">
-                  <label>IRP5/IT3(a) Certificates</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "irp5IT3a")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "irp5IT3a" && <span>Uploading...</span>}
-                  {documents.irp5IT3a && typeof documents.irp5IT3a === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.irp5IT3a.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("irp5IT3a")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>IT3(b) Investment Income</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "it3b")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "it3b" && <span>Uploading...</span>}
-                  {documents.it3b && typeof documents.it3b === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.it3b.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("it3b")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Medical Aid Tax Certificates</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "medicalAidCertificates")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "medicalAidCertificates" && <span>Uploading...</span>}
-                  {documents.medicalAidCertificates && typeof documents.medicalAidCertificates === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.medicalAidCertificates.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("medicalAidCertificates")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Retirement Annuity Certificates</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "retirementAnnuityCertificates")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "retirementAnnuityCertificates" && <span>Uploading...</span>}
-                  {documents.retirementAnnuityCertificates && typeof documents.retirementAnnuityCertificates === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.retirementAnnuityCertificates.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("retirementAnnuityCertificates")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Trial Balance</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "trialBalance")}
-                    accept=".pdf,.xls,.xlsx,.csv"
-                  />
-                  {uploadingDoc === "trialBalance" && <span>Uploading...</span>}
-                  {documents.trialBalance && typeof documents.trialBalance === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.trialBalance.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("trialBalance")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>General Ledger</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "generalLedger")}
-                    accept=".pdf,.xls,.xlsx,.csv"
-                  />
-                  {uploadingDoc === "generalLedger" && <span>Uploading...</span>}
-                  {documents.generalLedger && typeof documents.generalLedger === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.generalLedger.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("generalLedger")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Prior Year Signed Financials</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "priorYearFinancials")}
-                    accept=".pdf,.doc,.docx"
-                  />
-                  {uploadingDoc === "priorYearFinancials" && <span>Uploading...</span>}
-                  {documents.priorYearFinancials && typeof documents.priorYearFinancials === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.priorYearFinancials.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("priorYearFinancials")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Fixed Asset Register</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "fixedAssetRegister")}
-                    accept=".pdf,.xls,.xlsx,.csv"
-                  />
-                  {uploadingDoc === "fixedAssetRegister" && <span>Uploading...</span>}
-                  {documents.fixedAssetRegister && typeof documents.fixedAssetRegister === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.fixedAssetRegister.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("fixedAssetRegister")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("services")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          )}
-
-          {activeTab === "cipcCompliance" && (
-            <div className="form-section">
-              <h2>CIPC Compliance & Secretarial</h2>
-              <div className="form-grid">
-                <div className="form-group checkbox-group">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={profileData.services?.cipcCompliance?.beneficialOwnershipDeclaration || false}
-                      onChange={(e) =>
-                        handleDeepNestedInputChange(
-                          "services",
-                          "cipcCompliance",
-                          "beneficialOwnershipDeclaration",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    Signed Beneficial Ownership Declaration
-                  </label>
-                </div>
-                <div className="form-group checkbox-group">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={profileData.services?.cipcCompliance?.powerOfAttorney || false}
-                      onChange={(e) =>
-                        handleDeepNestedInputChange(
-                          "services",
-                          "cipcCompliance",
-                          "powerOfAttorney",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    Signed Power of Attorney (Mandate) for CIPC filings
-                  </label>
-                </div>
-                <div className="form-group checkbox-group">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={profileData.services?.cipcCompliance?.latestAFS || false}
-                      onChange={(e) =>
-                        handleDeepNestedInputChange(
-                          "services",
-                          "cipcCompliance",
-                          "latestAFS",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    Latest Annual Financial Statements (AFS) or FAS
-                  </label>
-                </div>
-              </div>
-              <h3>Document Uploads</h3>
-              <div className="upload-section">
-                <div className="upload-item">
-                  <label>Beneficial Ownership Declaration</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "beneficialOwnershipDeclarationDoc")}
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                  />
-                  {uploadingDoc === "beneficialOwnershipDeclarationDoc" && <span>Uploading...</span>}
-                  {documents.beneficialOwnershipDeclarationDoc && typeof documents.beneficialOwnershipDeclarationDoc === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.beneficialOwnershipDeclarationDoc.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("beneficialOwnershipDeclarationDoc")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Power of Attorney Document</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "powerOfAttorneyDoc")}
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                  />
-                  {uploadingDoc === "powerOfAttorneyDoc" && <span>Uploading...</span>}
-                  {documents.powerOfAttorneyDoc && typeof documents.powerOfAttorneyDoc === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.powerOfAttorneyDoc.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("powerOfAttorneyDoc")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Annual Financial Statements</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "annualFinancialStatements")}
-                    accept=".pdf,.xls,.xlsx"
-                  />
-                  {uploadingDoc === "annualFinancialStatements" && <span>Uploading...</span>}
-                  {documents.annualFinancialStatements && typeof documents.annualFinancialStatements === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.annualFinancialStatements.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("annualFinancialStatements")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("services")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          )}
-
-          {activeTab === "payroll" && (
-            <div className="form-section">
-              <h2>Payroll Services</h2>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Total Number of Employees</label>
-                  <input
-                    type="number"
-                    value={profileData.services?.payrollServices?.totalEmployees || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "payrollServices",
-                        "totalEmployees",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter total employees"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Pay Frequency</label>
-                  <select
-                    value={profileData.services?.payrollServices?.payFrequency || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "payrollServices",
-                        "payFrequency",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="">Select frequency</option>
-                    <option value="Weekly">Weekly</option>
-                    <option value="Fortnightly">Fortnightly</option>
-                    <option value="Monthly">Monthly</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Standard Working Hours</label>
-                  <input
-                    type="text"
-                    value={profileData.services?.payrollServices?.standardWorkingHours || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "payrollServices",
-                        "standardWorkingHours",
-                        e.target.value
-                      )
-                    }
-                    placeholder="e.g., 40 hours/week"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Existing Payroll Software</label>
-                  <input
-                    type="text"
-                    value={profileData.services?.payrollServices?.existingPayrollSoftware || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "payrollServices",
-                        "existingPayrollSoftware",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter current payroll software"
-                  />
-                </div>
-              </div>
-              <h3>Document Uploads</h3>
-              <div className="upload-section">
-                <div className="upload-item">
-                  <label>Current Employee List</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "employeeList")}
-                    accept=".pdf,.xls,.xlsx,.csv"
-                  />
-                  {uploadingDoc === "employeeList" && <span>Uploading...</span>}
-                  {documents.employeeList && typeof documents.employeeList === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.employeeList.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("employeeList")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>UIF/PAYE Reference Documents</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "uifPayeReference")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "uifPayeReference" && <span>Uploading...</span>}
-                  {documents.uifPayeReference && typeof documents.uifPayeReference === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.uifPayeReference.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("uifPayeReference")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Last 3 Months Payroll Reports</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "payrollReports")}
-                    accept=".pdf,.xls,.xlsx"
-                    multiple
-                  />
-                  {uploadingDoc === "payrollReports" && <span>Uploading...</span>}
-                  {documents.payrollReports && typeof documents.payrollReports === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.payrollReports.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("payrollReports")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("services")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          )}
-
-          {activeTab === "accounting" && (
-            <div className="form-section">
-              <h2>Accounting Advisory & IT</h2>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Preferred Accounting Software</label>
-                  <select
-                    value={profileData.services?.accountingAdvisory?.preferredSoftware?.[0] || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "accountingAdvisory",
-                        "preferredSoftware",
-                        e.target.value ? [e.target.value] : []
-                      )
-                    }
-                  >
-                    <option value="">Select software</option>
-                    <option value="Xero">Xero</option>
-                    <option value="QuickBooks">QuickBooks</option>
-                    <option value="Sage">Sage</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Number of Bank Accounts</label>
-                  <input
-                    type="number"
-                    value={profileData.services?.accountingAdvisory?.numberOfBankAccounts || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "accountingAdvisory",
-                        "numberOfBankAccounts",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter number of bank accounts"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Number of Credit Cards</label>
-                  <input
-                    type="number"
-                    value={profileData.services?.accountingAdvisory?.numberOfCreditCards || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "accountingAdvisory",
-                        "numberOfCreditCards",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter number of credit cards"
-                  />
-                </div>
-                <div className="form-group full-width">
-                  <label>Current Pain Points</label>
-                  <textarea
-                    value={profileData.services?.accountingAdvisory?.currentPainPoints || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "accountingAdvisory",
-                        "currentPainPoints",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Describe your current accounting challenges"
-                    rows={4}
-                  />
-                </div>
-              </div>
-              <h3>Document Uploads</h3>
-              <div className="upload-section">
-                <div className="upload-item">
-                  <label>Bank Statements (Last 6 Months)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "bankStatements")}
-                    accept=".pdf,.xls,.xlsx,.csv"
-                    multiple
-                  />
-                  {uploadingDoc === "bankStatements" && <span>Uploading...</span>}
-                  {documents.bankStatements && typeof documents.bankStatements === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.bankStatements.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("bankStatements")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Software Subscriptions List</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "softwareSubscriptions")}
-                    accept=".pdf,.doc,.docx"
-                  />
-                  {uploadingDoc === "softwareSubscriptions" && <span>Uploading...</span>}
-                  {documents.softwareSubscriptions && typeof documents.softwareSubscriptions === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.softwareSubscriptions.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("softwareSubscriptions")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("services")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          )}
-
-          {activeTab === "taxTransformation" && (
-            <div className="form-section">
-              <h2>Tax Transformation & ESG</h2>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Current Tax Workflow</label>
-                  <select
-                    value={profileData.services?.taxTransformation?.currentTaxWorkflow || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "taxTransformation",
-                        "currentTaxWorkflow",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="">Select workflow type</option>
-                    <option value="Manual">Manual</option>
-                    <option value="Automated">Automated</option>
-                    <option value="Hybrid">Hybrid</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Global Footprint</label>
-                  <input
-                    type="text"
-                    value={profileData.services?.taxTransformation?.globalFootprint || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "taxTransformation",
-                        "globalFootprint",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Describe global operations if applicable"
-                  />
-                </div>
-                <div className="form-group full-width">
-                  <label>Carbon Footprint Metrics</label>
-                  <textarea
-                    value={profileData.services?.taxTransformation?.carbonFootprintMetrics || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "taxTransformation",
-                        "carbonFootprintMetrics",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Energy/fuel usage metrics"
-                    rows={3}
-                  />
-                </div>
-                <div className="form-group full-width">
-                  <label>Board Diversity Details</label>
-                  <textarea
-                    value={profileData.services?.taxTransformation?.boardDiversity || ""}
-                    onChange={(e) =>
-                      handleDeepNestedInputChange(
-                        "services",
-                        "taxTransformation",
-                        "boardDiversity",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Board diversity information"
-                    rows={3}
-                  />
-                </div>
-              </div>
-              <h3>Document Uploads</h3>
-              <div className="upload-section">
-                <div className="upload-item">
-                  <label>Tax Policy/Strategy Documents</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "taxPolicyDocuments")}
-                    accept=".pdf,.doc,.docx"
-                    multiple
-                  />
-                  {uploadingDoc === "taxPolicyDocuments" && <span>Uploading...</span>}
-                  {documents.taxPolicyDocuments && typeof documents.taxPolicyDocuments === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.taxPolicyDocuments.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("taxPolicyDocuments")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Historical Compliance Records</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "complianceRecords")}
-                    accept=".pdf,.doc,.docx"
-                    multiple
-                  />
-                  {uploadingDoc === "complianceRecords" && <span>Uploading...</span>}
-                  {documents.complianceRecords && typeof documents.complianceRecords === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.complianceRecords.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("complianceRecords")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Sustainability Reports</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "sustainabilityReports")}
-                    accept=".pdf,.doc,.docx"
-                    multiple
-                  />
-                  {uploadingDoc === "sustainabilityReports" && <span>Uploading...</span>}
-                  {documents.sustainabilityReports && typeof documents.sustainabilityReports === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.sustainabilityReports.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("sustainabilityReports")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("services")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          )}
-
-          {activeTab === "banking" && (
-            <div className="form-section">
-              <h2>Banking & Verification Details</h2>
-              <p className="section-description">
-                Required for ensuring SARS refunds and fee payments are handled
-                correctly.
-              </p>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Bank Name</label>
-                  <input
-                    type="text"
-                    value={profileData.bankingDetails?.bankName || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "bankingDetails",
-                        "bankName",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter bank name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Account Holder Name</label>
-                  <input
-                    type="text"
-                    value={profileData.bankingDetails?.accountHolder || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "bankingDetails",
-                        "accountHolder",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter account holder name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Account Number</label>
-                  <input
-                    type="text"
-                    value={profileData.bankingDetails?.accountNumber || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "bankingDetails",
-                        "accountNumber",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter account number"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Branch Code</label>
-                  <input
-                    type="text"
-                    value={profileData.bankingDetails?.branchCode || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "bankingDetails",
-                        "branchCode",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter branch code"
-                  />
-                </div>
-              </div>
-              <h3>Document Uploads</h3>
-              <div className="upload-section">
-                <div className="upload-item">
-                  <label>Recent Bank Statement (for SARS verification)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "bankStatementVerification")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "bankStatementVerification" && <span>Uploading...</span>}
-                  {documents.bankStatementVerification && typeof documents.bankStatementVerification === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.bankStatementVerification.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("bankStatementVerification")}>✕ Remove</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("bankingDetails")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
             </div>
           )}
 
           {activeTab === "documents" && (
-            <div className="form-section">
-              <h2>Document Uploads - Personal & Business</h2>
-              <div className="upload-section">
-                <h3>Personal Documents</h3>
-                <div className="upload-item">
-                  <label>Certified ID/Passport</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "certifiedIDPassport")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "certifiedIDPassport" && <span>Uploading...</span>}
-                  {documents.certifiedIDPassport && typeof documents.certifiedIDPassport === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.certifiedIDPassport.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("certifiedIDPassport")}>✕ Remove</button>
+            <div className="documents-tab">
+              <h2>📁 FileVault - Secure Document Hub</h2>
+              <div className="filevault-sections">
+                <div className="filevault-section">
+                  <h3>📤 Uploads</h3>
+                  <p>Securely upload tax files, receipts, and invoices</p>
+                  <div className="upload-zone">
+                    <div className="upload-dropzone-large">
+                      <div className="upload-icon">☁️</div>
+                      <p>Drag & drop files here or click to browse</p>
+                      <input type="file" multiple />
                     </div>
-                  )}
+                  </div>
                 </div>
-                <div className="upload-item">
-                  <label>Proof of Residence (less than 3 months old)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "proofOfResidence")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "proofOfResidence" && <span>Uploading...</span>}
-                  {documents.proofOfResidence && typeof documents.proofOfResidence === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.proofOfResidence.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("proofOfResidence")}>✕ Remove</button>
+                <div className="filevault-section">
+                  <h3>📂 Shared Files</h3>
+                  <p>Access completed paperwork, past tax filings, and financial reports</p>
+                  <div className="shared-files-list">
+                    <div className="file-item">
+                      <span>📄 2023 Annual Financial Statements</span>
+                      <span className="file-date">Mar 2024</span>
                     </div>
-                  )}
-                </div>
-
-                <h3>Business Documents</h3>
-                <div className="upload-item">
-                  <label>CIPC Registration (CoR14.3/CK1)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "cipcRegistration")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "cipcRegistration" && <span>Uploading...</span>}
-                  {documents.cipcRegistration && typeof documents.cipcRegistration === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.cipcRegistration.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("cipcRegistration")}>✕ Remove</button>
+                    <div className="file-item">
+                      <span>📄 2023 Tax Return (ITR14)</span>
+                      <span className="file-date">Feb 2024</span>
                     </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>VAT/PAYE Registration Letters</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "vatPayeRegistration")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "vatPayeRegistration" && <span>Uploading...</span>}
-                  {documents.vatPayeRegistration && typeof documents.vatPayeRegistration === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.vatPayeRegistration.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("vatPayeRegistration")}>✕ Remove</button>
+                    <div className="file-item">
+                      <span>📄 Q4 2023 VAT Return</span>
+                      <span className="file-date">Jan 2024</span>
                     </div>
-                  )}
-                </div>
-                <div className="upload-item">
-                  <label>Proof of Business Address</label>
-                  <input
-                    type="file"
-                    onChange={(e) => handleFileUpload(e, "proofOfBusinessAddress")}
-                    accept=".pdf,.jpg,.jpeg,.png"
-                  />
-                  {uploadingDoc === "proofOfBusinessAddress" && <span>Uploading...</span>}
-                  {documents.proofOfBusinessAddress && typeof documents.proofOfBusinessAddress === 'string' && (
-                    <div className="uploaded-file-info">
-                      <span className="uploaded-file-name">✓ {documents.proofOfBusinessAddress.split('/').pop()}</span>
-                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("proofOfBusinessAddress")}>✕ Remove</button>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
-              <button
-                className="save-button"
-                onClick={() => handleSave("documents")}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
             </div>
           )}
-        </main>
+
+          {activeTab === "reports" && (
+            <div className="reports-tab">
+              <h2>📈 Financial Reports</h2>
+              <div className="reports-grid">
+                <div className="report-card">
+                  <h4>Profit & Loss Statement</h4>
+                  <p>View income, expenses, and net profit</p>
+                  <button className="report-btn">View Report</button>
+                </div>
+                <div className="report-card">
+                  <h4>Balance Sheet</h4>
+                  <p>Assets, liabilities, and equity overview</p>
+                  <button className="report-btn">View Report</button>
+                </div>
+                <div className="report-card">
+                  <h4>Cash Flow Statement</h4>
+                  <p>Operating, investing, and financing cash flows</p>
+                  <button className="report-btn">View Report</button>
+                </div>
+                <div className="report-card">
+                  <h4>KPI Dashboard</h4>
+                  <p>Key performance indicators and metrics</p>
+                  <button className="report-btn">View Report</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "tasks" && (
+            <div className="tasks-tab">
+              <h2>✅ Task Center</h2>
+              <div className="tasks-list">
+                <div className="task-item urgent">
+                  <div className="task-priority">🔴 Urgent</div>
+                  <div className="task-content">
+                    <h4>Submit Q1 2024 VAT Documents</h4>
+                    <p>Upload all supporting documents for Q1 VAT return</p>
+                    <span className="task-due">Due: 15 Apr 2024</span>
+                  </div>
+                  <button className="task-action">Upload</button>
+                </div>
+                <div className="task-item">
+                  <div className="task-priority">🟡 Pending</div>
+                  <div className="task-content">
+                    <h4>Review 2024 Tax Return Draft</h4>
+                    <p>Please review and approve the draft tax return</p>
+                    <span className="task-due">Due: 30 Apr 2024</span>
+                  </div>
+                  <button className="task-action">Review</button>
+                </div>
+                <div className="task-item">
+                  <div className="task-priority">🟢 In Progress</div>
+                  <div className="task-content">
+                    <h4>Update Banking Details</h4>
+                    <p>Provide updated bank statement for verification</p>
+                    <span className="task-due">Due: 15 May 2024</span>
+                  </div>
+                  <button className="task-action">Update</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "messages" && (
+            <div className="messages-tab">
+              <h2>💬 Secure Messaging</h2>
+              <div className="messages-layout">
+                <div className="messages-list">
+                  <div className="message-thread active">
+                    <div className="thread-avatar">S</div>
+                    <div className="thread-info">
+                      <h4>Sarah (Accountant)</h4>
+                      <p>Your 2024 tax return is ready...</p>
+                    </div>
+                    <span className="thread-time">2h ago</span>
+                  </div>
+                  <div className="message-thread">
+                    <div className="thread-avatar">M</div>
+                    <div className="thread-info">
+                      <h4>Michael (Tax Specialist)</h4>
+                      <p>VAT query resolved</p>
+                    </div>
+                    <span className="thread-time">1d ago</span>
+                  </div>
+                </div>
+                <div className="message-content">
+                  <div className="message-header">
+                    <h4>Sarah (Accountant)</h4>
+                  </div>
+                  <div className="messages-container">
+                    <div className="message received">
+                      <p>Hi there! Your 2024 tax return is ready for review. I've uploaded it to the Documents tab. Please take a look and let me know if you have any questions.</p>
+                      <span className="message-time">2 hours ago</span>
+                    </div>
+                    <div className="message sent">
+                      <p>Thank you Sarah! I'll review it today.</p>
+                      <span className="message-time">1 hour ago</span>
+                    </div>
+                  </div>
+                  <div className="message-input">
+                    <input type="text" placeholder="Type your message..." />
+                    <button className="send-btn">Send</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "onboarding" && (
+            <div className="onboarding-tab">
+              <h2>🚀 Onboarding Center</h2>
+              
+              <div className="onboarding-columns">
+                <div className="onboarding-column">
+                  <h3>📋 Profile Setup</h3>
+                  <div className="profile-sections">
+                    <div className="profile-section">
+                      <h4>Personal Information</h4>
+                      <div className="form-grid">
+                        <div className="form-group">
+                          <label>Full Names</label>
+                          <input
+                            type="text"
+                            value={profileData.personalInfo?.fullName || ""}
+                            onChange={(e) =>
+                              handleNestedInputChange("personalInfo", "fullName", e.target.value)
+                            }
+                            placeholder="Enter your full names"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>ID/Passport Number</label>
+                          <input
+                            type="text"
+                            value={profileData.personalInfo?.idPassportNumber || ""}
+                            onChange={(e) =>
+                              handleNestedInputChange("personalInfo", "idPassportNumber", e.target.value)
+                            }
+                            placeholder="Enter ID or Passport number"
+                          />
+                        </div>
+                      </div>
+                      <div className="progress-bar-section">
+                        <span>Progress: {calculateProgress('personal')}%</span>
+                        <div className="progress-bar">
+                          <div className="progress-fill" style={{ width: `${calculateProgress('personal')}%` }}></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="profile-section">
+                      <h4>Business Information</h4>
+                      <div className="form-grid">
+                        <div className="form-group">
+                          <label>Registered Name</label>
+                          <input
+                            type="text"
+                            value={profileData.businessInfo?.registeredName || ""}
+                            onChange={(e) =>
+                              handleNestedInputChange("businessInfo", "registeredName", e.target.value)
+                            }
+                            placeholder="Enter registered company name"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Company Registration Number</label>
+                          <input
+                            type="text"
+                            value={profileData.businessInfo?.companyRegistrationNumber || ""}
+                            onChange={(e) =>
+                              handleNestedInputChange("businessInfo", "companyRegistrationNumber", e.target.value)
+                            }
+                            placeholder="Enter company registration number"
+                          />
+                        </div>
+                      </div>
+                      <div className="progress-bar-section">
+                        <span>Progress: {calculateProgress('business')}%</span>
+                        <div className="progress-bar">
+                          <div className="progress-fill" style={{ width: `${calculateProgress('business')}%` }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="onboarding-column">
+                  <h3>🛠️ Add Services</h3>
+                  <p className="services-hint">Select at least one service to get started</p>
+                  <div className="services-selection">
+                    {serviceOptions.map(service => (
+                      <button
+                        key={service.id}
+                        className={`service-option ${selectedServices.includes(service.id) ? 'selected' : ''}`}
+                        style={{ 
+                          '--service-color': service.color,
+                          borderColor: selectedServices.includes(service.id) ? service.color : '#e0e0e0'
+                        }}
+                        onClick={() => toggleService(service.id)}
+                      >
+                        <div className="service-checkbox">
+                          {selectedServices.includes(service.id) && <span>✓</span>}
+                        </div>
+                        <span className="service-name">{service.name}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="service-progress-section">
+                    <h4>Service Completion Progress</h4>
+                    {selectedServices.map(serviceId => {
+                      const service = serviceOptions.find(s => s.id === serviceId);
+                      const progress = calculateProgress(serviceId);
+                      return (
+                        <div key={serviceId} className="service-progress-item">
+                          <div className="service-progress-header">
+                            <span>{service?.name}</span>
+                            <span>{progress}%</span>
+                          </div>
+                          <div className="progress-bar">
+                            <div 
+                              className="progress-fill" 
+                              style={{ width: `${progress}%`, background: service?.color }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="onboarding-actions">
+                <button className="save-button">Save & Continue</button>
+                <button className="secondary-button">Skip for Now</button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "taxcalendar" && (
+            <div className="taxcalendar-tab">
+              <h2>📅 Tax Calendar</h2>
+              <div className="calendar-layout">
+                <div className="calendar-sidebar">
+                  <h4>Upcoming Deadlines</h4>
+                  <div className="calendar-events">
+                    <div className="calendar-event urgent">
+                      <div className="event-date">
+                        <span className="event-day">15</span>
+                        <span className="event-month">Apr</span>
+                      </div>
+                      <div className="event-info">
+                        <h5>VAT Return Q1</h5>
+                        <p>Submit VAT201 form</p>
+                      </div>
+                    </div>
+                    <div className="calendar-event">
+                      <div className="event-date">
+                        <span className="event-day">31</span>
+                        <span className="event-month">May</span>
+                      </div>
+                      <div className="event-info">
+                        <h5>Provisional Tax</h5>
+                        <p>First provisional payment</p>
+                      </div>
+                    </div>
+                    <div className="calendar-event">
+                      <div className="event-date">
+                        <span className="event-day">30</span>
+                        <span className="event-month">Jun</span>
+                      </div>
+                      <div className="event-info">
+                        <h5>Annual Financials</h5>
+                        <p>Submit AFS to CIPC</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="calendar-main">
+                  <div className="calendar-grid">
+                    <div className="calendar-header">
+                      <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    </div>
+                    <div className="calendar-days">
+                      {Array.from({ length: 35 }, (_, i) => {
+                        const day = i - 2;
+                        const isToday = day === 11;
+                        const hasEvent = [15, 31].includes(day);
+                        return (
+                          <div 
+                            key={i} 
+                            className={`calendar-day ${day <= 0 || day > 30 ? 'other-month' : ''} ${isToday ? 'today' : ''} ${hasEvent ? 'has-event' : ''}`}
+                          >
+                            {day > 0 && day <= 30 ? day : ''}
+                            {hasEvent && <div className="event-dot"></div>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "guidelines" && (
+            <div className="guidelines-tab">
+              <h2>📖 Guidelines & Resources</h2>
+              <div className="guidelines-grid">
+                <div className="guideline-card">
+                  <h4>📋 Accounting Guidelines</h4>
+                  <p>Our internal policies and procedures for financial reporting</p>
+                  <button className="guideline-btn">View Guidelines</button>
+                </div>
+                <div className="guideline-card">
+                  <h4>📚 Tax Resources</h4>
+                  <p>Educational materials and tax planning guides</p>
+                  <button className="guideline-btn">View Resources</button>
+                </div>
+                <div className="guideline-card">
+                  <h4>🎥 Video Tutorials</h4>
+                  <p>How-to videos for using the portal and tax processes</p>
+                  <button className="guideline-btn">Watch Videos</button>
+                </div>
+                <div className="guideline-card">
+                  <h4>❓ FAQ</h4>
+                  <p>Frequently asked questions and answers</p>
+                  <button className="guideline-btn">View FAQ</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
