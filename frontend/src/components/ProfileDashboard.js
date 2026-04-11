@@ -21,8 +21,10 @@ const ProfileDashboard = () => {
   const [selectedWidgets, setSelectedWidgets] = useState([
     'taxTimeline', 'complianceStatus', 'cashFlow', 'documentUpload', 'messagePreview', 'taxTip'
   ]);
-  const [selectedServices, setSelectedServices] = useState(["taxServices"]);
-  const dropdownRef = useRef(null);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [entityType, setEntityType] = useState('business');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [dropdownRef] = useState(null);
 
   useEffect(() => {
     loadProfileData();
@@ -813,130 +815,180 @@ const ProfileDashboard = () => {
             <div className="onboarding-tab">
               <h2>🚀 Onboarding Center</h2>
               
-              <div className="onboarding-columns">
-                <div className="onboarding-column">
-                  <h3>📋 Profile Setup</h3>
-                  <div className="profile-sections">
-                    <div className="profile-section">
-                      <h4>Personal Information</h4>
-                      <div className="form-grid">
-                        <div className="form-group">
-                          <label>Full Names</label>
-                          <input
-                            type="text"
-                            value={profileData.personalInfo?.fullName || ""}
-                            onChange={(e) =>
-                              handleNestedInputChange("personalInfo", "fullName", e.target.value)
-                            }
-                            placeholder="Enter your full names"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>ID/Passport Number</label>
-                          <input
-                            type="text"
-                            value={profileData.personalInfo?.idPassportNumber || ""}
-                            onChange={(e) =>
-                              handleNestedInputChange("personalInfo", "idPassportNumber", e.target.value)
-                            }
-                            placeholder="Enter ID or Passport number"
-                          />
-                        </div>
-                      </div>
-                      <div className="progress-bar-section">
-                        <span>Progress: {calculateProgress('personal')}%</span>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{ width: `${calculateProgress('personal')}%` }}></div>
-                        </div>
-                      </div>
+              {/* Page Progress Indicator */}
+              <div className="onboarding-progress">
+                <div className="progress-step active">Select Service</div>
+                {selectedServices.map((serviceId, index) => {
+                  const service = serviceOptions.find(s => s.id === serviceId);
+                  return (
+                    <div key={serviceId} className="progress-step">
+                      {service?.name}
                     </div>
+                  );
+                })}
+                <div className="progress-step">Document Uploads</div>
+              </div>
 
-                    <div className="profile-section">
-                      <h4>Business Information</h4>
-                      <div className="form-grid">
-                        <div className="form-group">
-                          <label>Registered Name</label>
-                          <input
-                            type="text"
-                            value={profileData.businessInfo?.registeredName || ""}
-                            onChange={(e) =>
-                              handleNestedInputChange("businessInfo", "registeredName", e.target.value)
-                            }
-                            placeholder="Enter registered company name"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Company Registration Number</label>
-                          <input
-                            type="text"
-                            value={profileData.businessInfo?.companyRegistrationNumber || ""}
-                            onChange={(e) =>
-                              handleNestedInputChange("businessInfo", "companyRegistrationNumber", e.target.value)
-                            }
-                            placeholder="Enter company registration number"
-                          />
-                        </div>
-                      </div>
-                      <div className="progress-bar-section">
-                        <span>Progress: {calculateProgress('business')}%</span>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{ width: `${calculateProgress('business')}%` }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="onboarding-column">
-                  <h3>🛠️ Add Services</h3>
-                  <p className="services-hint">Select at least one service to get started</p>
-                  <div className="services-selection">
-                    {serviceOptions.map(service => (
+              {/* Page 1: Select Service */}
+              {currentPage === 1 && (
+                <div className="onboarding-page">
+                  <div className="onboarding-section">
+                    <h3>📋 Entity Type</h3>
+                    <div className="entity-selection">
                       <button
-                        key={service.id}
-                        className={`service-option ${selectedServices.includes(service.id) ? 'selected' : ''}`}
-                        style={{ 
-                          '--service-color': service.color,
-                          borderColor: selectedServices.includes(service.id) ? service.color : '#e0e0e0'
-                        }}
-                        onClick={() => toggleService(service.id)}
+                        className={`entity-option ${entityType === 'business' ? 'selected' : ''}`}
+                        onClick={() => setEntityType('business')}
                       >
-                        <div className="service-checkbox">
-                          {selectedServices.includes(service.id) && <span>✓</span>}
+                        <div className="entity-checkbox">
+                          {entityType === 'business' && <span>✓</span>}
                         </div>
-                        <span className="service-name">{service.name}</span>
+                        <span className="entity-name">Business</span>
                       </button>
-                    ))}
+                      <button
+                        className={`entity-option ${entityType === 'personal' ? 'selected' : ''}`}
+                        onClick={() => setEntityType('personal')}
+                      >
+                        <div className="entity-checkbox">
+                          {entityType === 'personal' && <span>✓</span>}
+                        </div>
+                        <span className="entity-name">Personal</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="service-progress-section">
-                    <h4>Service Completion Progress</h4>
-                    {selectedServices.map(serviceId => {
-                      const service = serviceOptions.find(s => s.id === serviceId);
-                      const progress = calculateProgress(serviceId);
-                      return (
-                        <div key={serviceId} className="service-progress-item">
-                          <div className="service-progress-header">
-                            <span>{service?.name}</span>
-                            <span>{progress}%</span>
+                  <div className="onboarding-section">
+                    <h3>🛠️ Add Services</h3>
+                    <p className="services-hint">Select the services you need</p>
+                    <div className="services-selection">
+                      {serviceOptions.map(service => (
+                        <button
+                          key={service.id}
+                          className={`service-option ${selectedServices.includes(service.id) ? 'selected' : ''}`}
+                          style={{ 
+                            '--service-color': service.color,
+                            borderColor: selectedServices.includes(service.id) ? service.color : '#e0e0e0'
+                          }}
+                          onClick={() => {
+                            setSelectedServices((prev) => 
+                              prev.includes(service.id)
+                                ? prev.filter(id => id !== service.id)
+                                : [...prev, service.id]
+                            );
+                          }}
+                        >
+                          <div className="service-checkbox">
+                            {selectedServices.includes(service.id) && <span>✓</span>}
                           </div>
-                          <div className="progress-bar">
-                            <div 
-                              className="progress-fill" 
-                              style={{ width: `${progress}%`, background: service?.color }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                          <span className="service-name">{service.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="onboarding-actions">
+                    <button 
+                      className="save-button"
+                      onClick={() => setCurrentPage(2)}
+                      disabled={selectedServices.length === 0}
+                    >
+                      Continue to Forms
+                    </button>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className="onboarding-actions">
-                <button className="save-button">Save & Continue</button>
-                <button className="secondary-button">Skip for Now</button>
-              </div>
+              {/* Service Form Pages */}
+              {currentPage > 1 && currentPage <= selectedServices.length + 1 && (
+                <div className="onboarding-page">
+                  <div className="service-form-page">
+                    <h3>{serviceOptions.find(s => s.id === selectedServices[currentPage - 2])?.name} Form</h3>
+                    
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="Enter your full name" />
+                      </div>
+                      <div className="form-group">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="Enter your email" />
+                      </div>
+                      <div className="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" placeholder="Enter your phone number" />
+                      </div>
+                      <div className="form-group">
+                        <label>Company Name</label>
+                        <input type="text" placeholder="Enter company name" />
+                      </div>
+                    </div>
+
+                    <div className="onboarding-actions">
+                      <button 
+                        className="secondary-button"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                      >
+                        Back
+                      </button>
+                      <button 
+                        className="save-button"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                      >
+                        {currentPage === selectedServices.length + 1 ? 'Continue to Uploads' : 'Next Service'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Document Uploads Page */}
+              {currentPage === selectedServices.length + 2 && (
+                <div className="onboarding-page">
+                  <div className="document-uploads-page">
+                    <h3>📄 Document Uploads</h3>
+                    <p className="upload-instructions">Please upload the required documents to complete your onboarding</p>
+                    
+                    <div className="upload-section">
+                      <div className="upload-item">
+                        <label>ID Document / Passport</label>
+                        <input type="file" />
+                        <span>PDF, JPG, PNG (Max 5MB)</span>
+                      </div>
+                      <div className="upload-item">
+                        <label>Proof of Address</label>
+                        <input type="file" />
+                        <span>Utility bill, Bank statement (Max 5MB)</span>
+                      </div>
+                      <div className="upload-item">
+                        <label>Company Registration Documents</label>
+                        <input type="file" />
+                        <span>CoR 14.3, CoR 21.4 (Max 5MB)</span>
+                      </div>
+                      <div className="upload-item">
+                        <label>Bank Confirmation Letter</label>
+                        <input type="file" />
+                        <span>Recent bank statement (Max 5MB)</span>
+                      </div>
+                      <div className="upload-item">
+                        <label>SARS Tax Compliance Status</label>
+                        <input type="file" />
+                        <span>TCS Pin or Certificate (Max 5MB)</span>
+                      </div>
+                    </div>
+
+                    <div className="onboarding-actions">
+                      <button 
+                        className="secondary-button"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                      >
+                        Back
+                      </button>
+                      <button className="save-button">
+                        Complete Onboarding
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
