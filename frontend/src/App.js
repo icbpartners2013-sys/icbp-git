@@ -12,8 +12,25 @@ const AppContent = () => {
   if (loading) {
     return (
       <div className="loading-screen">
-        <div className="spinner"></div>
-        <p>Loading...</p>
+        {/* Modern Logo Animation */}
+        <div className="loading-logo">
+          <div className="loading-logo-square"></div>
+        </div>
+
+        {/* Loading Text */}
+        <div className="loading-text">Loading</div>
+
+        {/* Progress Bar */}
+        <div className="loading-progress">
+          <div className="loading-progress-bar"></div>
+        </div>
+
+        {/* Animated Dots */}
+        <div className="loading-dots">
+          <div className="loading-dot"></div>
+          <div className="loading-dot"></div>
+          <div className="loading-dot"></div>
+        </div>
       </div>
     );
   }
