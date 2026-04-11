@@ -66,40 +66,27 @@ const ProfileDashboard = () => {
     }
   };
 
-  const handleFileUpload = async (e, documentType) => {
+  const handleFileUpload = (e, documentType) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setUploadingDoc(documentType);
-    setMessage({ type: "", text: "" });
+    // Store the file reference in state (will be uploaded on save)
+    setDocuments((prev) => ({
+      ...prev,
+      [documentType]: file.name,
+    }));
 
-    const formData = new FormData();
-    formData.append("document", file);
-    formData.append("documentType", documentType);
-
-    const result = await uploadDocument(formData, documentType);
-
-    setUploadingDoc(null);
-    if (result.success) {
-      showMessage("success", "Document uploaded successfully!");
-      loadProfileData();
-      // Reset file input
-      e.target.value = "";
-    } else {
-      showMessage("error", result.error);
-    }
+    // Reset file input
+    e.target.value = "";
   };
 
-  const handleDeleteDocument = async (documentType) => {
-    if (!window.confirm("Are you sure you want to delete this document?")) return;
-
-    const result = await deleteDocument(documentType);
-    if (result.success) {
-      showMessage("success", "Document deleted successfully!");
-      loadProfileData();
-    } else {
-      showMessage("error", result.error);
-    }
+  const handleDeleteDocument = (documentType) => {
+    // Remove from local state (will be deleted from DB on save)
+    setDocuments((prev) => {
+      const updated = { ...prev };
+      delete updated[documentType];
+      return updated;
+    });
   };
 
   const showMessage = (type, text) => {
