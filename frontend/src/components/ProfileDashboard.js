@@ -645,6 +645,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.xls,.xlsx,.csv"
                   />
                   {uploadingDoc === "trialBalance" && <span>Uploading...</span>}
+                  {documents.trialBalance && typeof documents.trialBalance === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.trialBalance.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("trialBalance")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>General Ledger</label>
@@ -654,6 +660,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.xls,.xlsx,.csv"
                   />
                   {uploadingDoc === "generalLedger" && <span>Uploading...</span>}
+                  {documents.generalLedger && typeof documents.generalLedger === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.generalLedger.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("generalLedger")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Prior Year Signed Financials</label>
@@ -663,6 +675,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.doc,.docx"
                   />
                   {uploadingDoc === "priorYearFinancials" && <span>Uploading...</span>}
+                  {documents.priorYearFinancials && typeof documents.priorYearFinancials === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.priorYearFinancials.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("priorYearFinancials")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Fixed Asset Register</label>
@@ -672,6 +690,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.xls,.xlsx,.csv"
                   />
                   {uploadingDoc === "fixedAssetRegister" && <span>Uploading...</span>}
+                  {documents.fixedAssetRegister && typeof documents.fixedAssetRegister === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.fixedAssetRegister.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("fixedAssetRegister")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
               </div>
               <button
@@ -750,6 +774,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                   />
                   {uploadingDoc === "beneficialOwnershipDeclarationDoc" && <span>Uploading...</span>}
+                  {documents.beneficialOwnershipDeclarationDoc && typeof documents.beneficialOwnershipDeclarationDoc === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.beneficialOwnershipDeclarationDoc.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("beneficialOwnershipDeclarationDoc")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Power of Attorney Document</label>
@@ -759,6 +789,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                   />
                   {uploadingDoc === "powerOfAttorneyDoc" && <span>Uploading...</span>}
+                  {documents.powerOfAttorneyDoc && typeof documents.powerOfAttorneyDoc === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.powerOfAttorneyDoc.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("powerOfAttorneyDoc")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Annual Financial Statements</label>
@@ -768,6 +804,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.xls,.xlsx"
                   />
                   {uploadingDoc === "annualFinancialStatements" && <span>Uploading...</span>}
+                  {documents.annualFinancialStatements && typeof documents.annualFinancialStatements === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.annualFinancialStatements.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("annualFinancialStatements")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
               </div>
               <button
@@ -862,6 +904,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.xls,.xlsx,.csv"
                   />
                   {uploadingDoc === "employeeList" && <span>Uploading...</span>}
+                  {documents.employeeList && typeof documents.employeeList === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.employeeList.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("employeeList")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>UIF/PAYE Reference Documents</label>
@@ -871,6 +919,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "uifPayeReference" && <span>Uploading...</span>}
+                  {documents.uifPayeReference && typeof documents.uifPayeReference === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.uifPayeReference.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("uifPayeReference")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Last 3 Months Payroll Reports</label>
@@ -881,6 +935,12 @@ const ProfileDashboard = () => {
                     multiple
                   />
                   {uploadingDoc === "payrollReports" && <span>Uploading...</span>}
+                  {documents.payrollReports && typeof documents.payrollReports === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.payrollReports.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("payrollReports")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
               </div>
               <button
@@ -977,6 +1037,12 @@ const ProfileDashboard = () => {
                     multiple
                   />
                   {uploadingDoc === "bankStatements" && <span>Uploading...</span>}
+                  {documents.bankStatements && typeof documents.bankStatements === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.bankStatements.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("bankStatements")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Software Subscriptions List</label>
@@ -986,6 +1052,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.doc,.docx"
                   />
                   {uploadingDoc === "softwareSubscriptions" && <span>Uploading...</span>}
+                  {documents.softwareSubscriptions && typeof documents.softwareSubscriptions === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.softwareSubscriptions.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("softwareSubscriptions")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
               </div>
               <button
@@ -1081,6 +1153,12 @@ const ProfileDashboard = () => {
                     multiple
                   />
                   {uploadingDoc === "taxPolicyDocuments" && <span>Uploading...</span>}
+                  {documents.taxPolicyDocuments && typeof documents.taxPolicyDocuments === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.taxPolicyDocuments.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("taxPolicyDocuments")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Historical Compliance Records</label>
@@ -1091,6 +1169,12 @@ const ProfileDashboard = () => {
                     multiple
                   />
                   {uploadingDoc === "complianceRecords" && <span>Uploading...</span>}
+                  {documents.complianceRecords && typeof documents.complianceRecords === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.complianceRecords.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("complianceRecords")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Sustainability Reports</label>
@@ -1101,6 +1185,12 @@ const ProfileDashboard = () => {
                     multiple
                   />
                   {uploadingDoc === "sustainabilityReports" && <span>Uploading...</span>}
+                  {documents.sustainabilityReports && typeof documents.sustainabilityReports === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.sustainabilityReports.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("sustainabilityReports")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
               </div>
               <button
@@ -1192,6 +1282,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "bankStatementVerification" && <span>Uploading...</span>}
+                  {documents.bankStatementVerification && typeof documents.bankStatementVerification === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.bankStatementVerification.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("bankStatementVerification")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
               </div>
               <button
