@@ -1,26 +1,25 @@
-/* Address Form Styles */
+/* Address Form Styles - Minimal Design */
 .address-form {
-  background: #F5F5F0;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  border: 1px solid #e0e0e0;
+  margin-bottom: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 .address-header {
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #02255A;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .address-header h4 {
   color: #02255A;
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
-/* Form Group */
+/* Form Group - Same as other form fields */
 .address-form .form-group {
   margin-bottom: 16px;
   position: relative;
@@ -143,8 +142,8 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .address-form {
-    padding: 16px;
+  .address-form .form-group {
+    margin-bottom: 12px;
   }
 
   .autocomplete-dropdown {
