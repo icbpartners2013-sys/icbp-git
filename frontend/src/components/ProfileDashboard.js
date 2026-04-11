@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import "./ProfileDashboard.css";
 
 const ProfileDashboard = () => {
-  const { user, logout, updateProfile, uploadDocument, fetchProfile, deleteDocument } = useAuth();
+  const { user, logout, updateProfile, uploadDocument, fetchProfile, deleteDocument, toggleDarkMode } = useAuth();
   const [activeTab, setActiveTab] = useState("personal");
   const [profileData, setProfileData] = useState({});
   const [documents, setDocuments] = useState({});
@@ -13,6 +13,9 @@ const ProfileDashboard = () => {
   const [message, setMessage] = useState({ type: "", text: "" });
   const [uploadingDoc, setUploadingDoc] = useState(null);
   const [messageTimeout, setMessageTimeout] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showEntityModal, setShowEntityModal] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     loadProfileData();
@@ -207,9 +210,102 @@ const ProfileDashboard = () => {
           <h1>ICBP Client Portal</h1>
           <div className="header-actions">
             <span className="user-email">{user?.email}</span>
-            <button className="logout-button" onClick={handleLogout}>
-              Logout
-            </button>
+            <div className="profile-dropdown" ref={dropdownRef}>
+              <button 
+                className="profile-button" 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <div className="profile-avatar">
+                  {user?.email?.charAt(0).toUpperCase()}
+                </div>
+                <span className="profile-name">{user?.email}</span>
+                <svg className="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                  <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <div className="dropdown-section">
+                    <div className="dropdown-section-title">Account Settings</div>
+                    <button className="dropdown-item">
+                      <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                      </svg>
+                      Profile
+                    </button>
+                    <button className="dropdown-item">
+                      <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 17a5 5 0 100-10 5 5 0 000 10z" fill="currentColor"/>
+                        <path d="M12 19.5c-4.7 0-9 2.5-9 4v1h18v-1c0-1.5-4.3-4-9-4z" fill="currentColor"/>
+                      </svg>
+                      Security & MFA
+                    </button>
+                    <button className="dropdown-item">
+                      <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor"/>
+                      </svg>
+                      Notifications
+                    </button>
+                  </div>
+                  
+                  <div className="dropdown-section">
+                    <div className="dropdown-section-title">Entity Management</div>
+                    <button 
+                      className="dropdown-item"
+                      onClick={() => {
+                        setShowEntityModal(true);
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Switch Accounts
+                    </button>
+                  </div>
+                  
+                  <div className="dropdown-section">
+                    <div className="dropdown-section-title">Billing</div>
+                    <button className="dropdown-item">
+                      <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M19 5H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2zm0 12H5V7h14v10z" fill="currentColor"/>
+                        <path d="M5 9h14v2H5zM5 13h10v2H5z" fill="currentColor"/>
+                      </svg>
+                      View Invoices
+                    </button>
+                  </div>
+                  
+                  <div className="dropdown-section">
+                    <div className="dropdown-section-title">UI Preferences</div>
+                    <button 
+                      className="dropdown-item"
+                      onClick={() => {
+                        toggleDarkMode();
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm7.07 3.07a1 1 0 00-1.41-1.41l-.7.71-.71-.7a1 1 0 10-1.42 1.42l.71.71-.71.71a1 1 0 101.42 1.42l.71-.71.71.71a1 1 0 101.41-1.41l-.7-.71.7-.71zM4.93 4.93a1 1 0 00-1.41 1.41l.7.71-.71.71a1 1 0 101.41 1.41l.71-.7.71.7a1 1 0 101.42-1.42l-.71-.71.71-.71a1 1 0 00-1.42-1.41l-.71.7-.7-.7zM12 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-5.28-4a1 1 0 011.41 0l.71.71.71-.71a1 1 0 111.41 1.41l-.7.71.7.71a1 1 0 11-1.41 1.41l-.71-.7-.71.71a1 1 0 11-1.41-1.41l.7-.71-.7-.71a1 1 0 010-1.41zM19 11a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z" fill="currentColor"/>
+                      </svg>
+                      Toggle Dark Mode
+                    </button>
+                  </div>
+                  
+                  <div className="dropdown-divider"></div>
+                  
+                  <button 
+                    className="dropdown-item logout-item"
+                    onClick={handleLogout}
+                  >
+                    <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M17 7l5 5m0 0l-5 5m5-5H9m-4 0h-.2a2 2 0 01-2-2V9a2 2 0 012-2H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
