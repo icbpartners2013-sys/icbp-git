@@ -176,7 +176,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "personalInfo",
-                        "personalInfo",
                         "fullName",
                         e.target.value
                       )
@@ -191,7 +190,6 @@ const ProfileDashboard = () => {
                     value={profileData.personalInfo?.idPassportNumber || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "personalInfo",
                         "personalInfo",
                         "idPassportNumber",
                         e.target.value
@@ -208,7 +206,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "personalInfo",
-                        "personalInfo",
                         "nationality",
                         e.target.value
                       )
@@ -222,7 +219,6 @@ const ProfileDashboard = () => {
                     value={profileData.personalInfo?.maritalStatus || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "personalInfo",
                         "personalInfo",
                         "maritalStatus",
                         e.target.value
@@ -244,7 +240,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "personalInfo",
-                        "personalInfo",
                         "occupation",
                         e.target.value
                       )
@@ -259,7 +254,6 @@ const ProfileDashboard = () => {
                     value={profileData.personalInfo?.incomeTaxNumber || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "personalInfo",
                         "personalInfo",
                         "incomeTaxNumber",
                         e.target.value
@@ -300,7 +294,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "businessInfo",
-                        "businessInfo",
                         "registeredName",
                         e.target.value
                       )
@@ -315,7 +308,6 @@ const ProfileDashboard = () => {
                     value={profileData.businessInfo?.tradingName || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "businessInfo",
                         "businessInfo",
                         "tradingName",
                         e.target.value
@@ -332,7 +324,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "businessInfo",
-                        "businessInfo",
                         "companyRegistrationNumber",
                         e.target.value
                       )
@@ -347,7 +338,6 @@ const ProfileDashboard = () => {
                     value={profileData.businessInfo?.vatNumber || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "businessInfo",
                         "businessInfo",
                         "vatNumber",
                         e.target.value
@@ -364,7 +354,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "businessInfo",
-                        "businessInfo",
                         "payeNumber",
                         e.target.value
                       )
@@ -379,7 +368,6 @@ const ProfileDashboard = () => {
                     value={profileData.businessInfo?.uifNumber || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "businessInfo",
                         "businessInfo",
                         "uifNumber",
                         e.target.value
@@ -396,7 +384,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "businessInfo",
-                        "businessInfo",
                         "sdlNumber",
                         e.target.value
                       )
@@ -411,7 +398,6 @@ const ProfileDashboard = () => {
                     value={profileData.businessInfo?.annualTurnover || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "businessInfo",
                         "businessInfo",
                         "annualTurnover",
                         e.target.value
@@ -428,7 +414,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "businessInfo",
-                        "businessInfo",
                         "piScore",
                         e.target.value
                       )
@@ -443,7 +428,6 @@ const ProfileDashboard = () => {
                     value={profileData.businessInfo?.numberOfEmployees || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "businessInfo",
                         "businessInfo",
                         "numberOfEmployees",
                         e.target.value
@@ -470,7 +454,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "businessInfo",
-                        "businessInfo",
                         "natureOfBusiness",
                         e.target.value
                       )
@@ -485,7 +468,6 @@ const ProfileDashboard = () => {
                     value={profileData.businessInfo?.directorChanges || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "businessInfo",
                         "businessInfo",
                         "directorChanges",
                         e.target.value
@@ -1113,7 +1095,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "bankingDetails",
-                        "bankingDetails",
                         "bankName",
                         e.target.value
                       )
@@ -1128,7 +1109,6 @@ const ProfileDashboard = () => {
                     value={profileData.bankingDetails?.accountHolder || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "bankingDetails",
                         "bankingDetails",
                         "accountHolder",
                         e.target.value
@@ -1145,7 +1125,6 @@ const ProfileDashboard = () => {
                     onChange={(e) =>
                       handleNestedInputChange(
                         "bankingDetails",
-                        "bankingDetails",
                         "accountNumber",
                         e.target.value
                       )
@@ -1160,7 +1139,6 @@ const ProfileDashboard = () => {
                     value={profileData.bankingDetails?.branchCode || ""}
                     onChange={(e) =>
                       handleNestedInputChange(
-                        "bankingDetails",
                         "bankingDetails",
                         "branchCode",
                         e.target.value
