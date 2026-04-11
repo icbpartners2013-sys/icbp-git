@@ -1356,7 +1356,6 @@ const ProfileDashboard = () => {
                 <div className="profile-avatar">
                   {user?.email?.charAt(0).toUpperCase()}
                 </div>
-                <span className="profile-name">{user?.email}</span>
                 <svg className="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
                   <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
