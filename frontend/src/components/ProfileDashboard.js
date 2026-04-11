@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import AddressAutocomplete from "./AddressAutocomplete";
 import "./ProfileDashboard.css";
 
 const ProfileDashboard = () => {
@@ -220,22 +221,6 @@ const ProfileDashboard = () => {
                   </select>
                 </div>
                 <div className="form-group full-width">
-                  <label>Physical Address</label>
-                  <textarea
-                    value={profileData.personalInfo?.physicalAddress || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "personalInfo",
-                        "personalInfo",
-                        "physicalAddress",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter your physical address"
-                    rows={3}
-                  />
-                </div>
-                <div className="form-group">
                   <label>Occupation</label>
                   <input
                     type="text"
@@ -268,6 +253,15 @@ const ProfileDashboard = () => {
                   />
                 </div>
               </div>
+
+              {/* Address Autocomplete Component */}
+              <AddressAutocomplete
+                address={profileData.personalInfo?.address || {}}
+                onChange={(section, field, value) =>
+                  handleNestedInputChange("personalInfo", "address", field, value)
+                }
+              />
+
               <button
                 className="save-button"
                 onClick={() => handleSave("personalInfo")}
@@ -442,22 +436,17 @@ const ProfileDashboard = () => {
                     placeholder="Enter number of employees"
                   />
                 </div>
-                <div className="form-group full-width">
-                  <label>Physical/Postal Address</label>
-                  <textarea
-                    value={profileData.businessInfo?.physicalPostalAddress || ""}
-                    onChange={(e) =>
-                      handleNestedInputChange(
-                        "businessInfo",
-                        "businessInfo",
-                        "physicalPostalAddress",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter business address"
-                    rows={3}
-                  />
-                </div>
+              </div>
+
+              {/* Business Address Autocomplete Component */}
+              <AddressAutocomplete
+                address={profileData.businessInfo?.address || {}}
+                onChange={(section, field, value) =>
+                  handleNestedInputChange("businessInfo", "address", field, value)
+                }
+              />
+
+              <div className="form-grid">
                 <div className="form-group full-width">
                   <label>Nature of Business</label>
                   <textarea

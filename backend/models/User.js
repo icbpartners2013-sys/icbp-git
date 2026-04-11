@@ -25,7 +25,15 @@ const UserSchema = new mongoose.Schema(
           enum: ["Single", "Married", "Divorced", "Widowed", ""],
           default: "",
         },
-        physicalAddress: String,
+        // Comprehensive Address Fields
+        address: {
+          country: String,
+          streetAddress1: String,
+          streetAddress2: String,
+          city: String,
+          state: String,
+          zipCode: String,
+        },
         occupation: String,
         incomeTaxNumber: String,
       },
@@ -38,7 +46,15 @@ const UserSchema = new mongoose.Schema(
         payeNumber: String,
         uifNumber: String,
         sdlNumber: String,
-        physicalPostalAddress: String,
+        // Comprehensive Business Address Fields
+        address: {
+          country: String,
+          streetAddress1: String,
+          streetAddress2: String,
+          city: String,
+          state: String,
+          zipCode: String,
+        },
         natureOfBusiness: String,
         annualTurnover: String,
         piScore: String,
