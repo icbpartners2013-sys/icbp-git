@@ -126,6 +126,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteDocument = async (documentType) => {
+    try {
+      // Get the current document path from the documents state
+      const profileResult = await fetchProfile();
+      if (profileResult.success) {
+        const filePath = profileResult.data.documents?.[documentType];
+        const response = await axios.delete(`${API_URL}/profile/document/${documentType}`, {
+          data: { filePath }
+        });
+        return { success: true, data: response.data };
+      }
+      return { success: false, error: "Could not fetch profile" };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || "Delete failed",
+      };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -137,6 +157,7 @@ export const AuthProvider = ({ children }) => {
         updateProfile,
         uploadDocument,
         fetchProfile,
+        deleteDocument,
         isAuthenticated: !!token,
       }}
     >

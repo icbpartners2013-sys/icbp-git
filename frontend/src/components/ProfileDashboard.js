@@ -4,7 +4,7 @@ import AddressAutocomplete from "./AddressAutocomplete";
 import "./ProfileDashboard.css";
 
 const ProfileDashboard = () => {
-  const { user, logout, updateProfile, uploadDocument, fetchProfile } = useAuth();
+  const { user, logout, updateProfile, uploadDocument, fetchProfile, deleteDocument } = useAuth();
   const [activeTab, setActiveTab] = useState("personal");
   const [profileData, setProfileData] = useState({});
   const [documents, setDocuments] = useState({});
@@ -12,6 +12,7 @@ const ProfileDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [uploadingDoc, setUploadingDoc] = useState(null);
+  const [messageTimeout, setMessageTimeout] = useState(null);
 
   useEffect(() => {
     loadProfileData();
@@ -80,10 +81,41 @@ const ProfileDashboard = () => {
 
     setUploadingDoc(null);
     if (result.success) {
-      setMessage({ type: "success", text: "Document uploaded successfully!" });
+      showMessage("success", "Document uploaded successfully!");
+      loadProfileData();
+      // Reset file input
+      e.target.value = "";
+    } else {
+      showMessage("error", result.error);
+    }
+  };
+
+  const handleDeleteDocument = async (documentType) => {
+    if (!window.confirm("Are you sure you want to delete this document?")) return;
+
+    const result = await deleteDocument(documentType);
+    if (result.success) {
+      showMessage("success", "Document deleted successfully!");
       loadProfileData();
     } else {
-      setMessage({ type: "error", text: result.error });
+      showMessage("error", result.error);
+    }
+  };
+
+  const showMessage = (type, text) => {
+    // Clear any existing timeout
+    if (messageTimeout) {
+      clearTimeout(messageTimeout);
+    }
+
+    setMessage({ type, text });
+
+    // Auto-dismiss after 3 seconds for success messages
+    if (type === "success") {
+      const timeout = setTimeout(() => {
+        setMessage({ type: "", text: "" });
+      }, 3000);
+      setMessageTimeout(timeout);
     }
   };
 
@@ -553,6 +585,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "irp5IT3a" && <span>Uploading...</span>}
+                  {documents.irp5IT3a && typeof documents.irp5IT3a === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.irp5IT3a.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("irp5IT3a")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>IT3(b) Investment Income</label>
@@ -562,6 +600,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "it3b" && <span>Uploading...</span>}
+                  {documents.it3b && typeof documents.it3b === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.it3b.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("it3b")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Medical Aid Tax Certificates</label>
@@ -571,6 +615,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "medicalAidCertificates" && <span>Uploading...</span>}
+                  {documents.medicalAidCertificates && typeof documents.medicalAidCertificates === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.medicalAidCertificates.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("medicalAidCertificates")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Retirement Annuity Certificates</label>
@@ -580,6 +630,12 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "retirementAnnuityCertificates" && <span>Uploading...</span>}
+                  {documents.retirementAnnuityCertificates && typeof documents.retirementAnnuityCertificates === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.retirementAnnuityCertificates.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("retirementAnnuityCertificates")}>✕ Remove</button>
+                    </div>
+                  )}
                 </div>
                 <div className="upload-item">
                   <label>Trial Balance</label>
@@ -1165,8 +1221,11 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "certifiedIDPassport" && <span>Uploading...</span>}
-                  {documents.certifiedIDPassport && (
-                    <span className="uploaded-file">✓ Uploaded</span>
+                  {documents.certifiedIDPassport && typeof documents.certifiedIDPassport === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.certifiedIDPassport.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("certifiedIDPassport")}>✕ Remove</button>
+                    </div>
                   )}
                 </div>
                 <div className="upload-item">
@@ -1177,8 +1236,11 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "proofOfResidence" && <span>Uploading...</span>}
-                  {documents.proofOfResidence && (
-                    <span className="uploaded-file">✓ Uploaded</span>
+                  {documents.proofOfResidence && typeof documents.proofOfResidence === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.proofOfResidence.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("proofOfResidence")}>✕ Remove</button>
+                    </div>
                   )}
                 </div>
 
@@ -1191,8 +1253,11 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "cipcRegistration" && <span>Uploading...</span>}
-                  {documents.cipcRegistration && (
-                    <span className="uploaded-file">✓ Uploaded</span>
+                  {documents.cipcRegistration && typeof documents.cipcRegistration === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.cipcRegistration.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("cipcRegistration")}>✕ Remove</button>
+                    </div>
                   )}
                 </div>
                 <div className="upload-item">
@@ -1203,8 +1268,11 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "vatPayeRegistration" && <span>Uploading...</span>}
-                  {documents.vatPayeRegistration && (
-                    <span className="uploaded-file">✓ Uploaded</span>
+                  {documents.vatPayeRegistration && typeof documents.vatPayeRegistration === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.vatPayeRegistration.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("vatPayeRegistration")}>✕ Remove</button>
+                    </div>
                   )}
                 </div>
                 <div className="upload-item">
@@ -1215,8 +1283,11 @@ const ProfileDashboard = () => {
                     accept=".pdf,.jpg,.jpeg,.png"
                   />
                   {uploadingDoc === "proofOfBusinessAddress" && <span>Uploading...</span>}
-                  {documents.proofOfBusinessAddress && (
-                    <span className="uploaded-file">✓ Uploaded</span>
+                  {documents.proofOfBusinessAddress && typeof documents.proofOfBusinessAddress === 'string' && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {documents.proofOfBusinessAddress.split('/').pop()}</span>
+                      <button className="remove-doc-button" onClick={() => handleDeleteDocument("proofOfBusinessAddress")}>✕ Remove</button>
+                    </div>
                   )}
                 </div>
               </div>

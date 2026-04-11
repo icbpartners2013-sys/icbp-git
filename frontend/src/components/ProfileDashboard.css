@@ -255,6 +255,42 @@
   font-weight: 600;
 }
 
+.uploaded-file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f0fff4;
+  border-radius: 6px;
+  border: 1px solid #a7f3d0;
+}
+
+.uploaded-file-name {
+  color: #059669;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.remove-doc-button {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  color: #BF080D;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.remove-doc-button:hover {
+  background: #BF080D;
+  color: white;
+  border-color: #BF080D;
+}
+
 .upload-item span {
   color: #BF080D;
   font-size: 0.85rem;
