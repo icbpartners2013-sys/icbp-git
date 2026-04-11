@@ -79,18 +79,45 @@
 }
 
 .tabs-nav {
-  display: flex;
-  gap: 4px;
   background: white;
   border-radius: 12px;
-  padding: 6px;
+  padding: 20px;
   margin-bottom: 24px;
   box-shadow: 0 2px 12px rgba(2, 37, 90, 0.08);
-  overflow-x: auto;
+}
+
+.tab-group {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-group:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.tab-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #BF080D;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.tab-group-tabs {
+  display: flex;
   flex-wrap: wrap;
+  gap: 6px;
 }
 
 .tab-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 10px 16px;
   border: none;
   background: transparent;
@@ -101,6 +128,7 @@
   transition: all 0.3s ease;
   white-space: nowrap;
   font-weight: 500;
+  width: 100%;
 }
 
 .tab-button:hover {
@@ -113,6 +141,38 @@
   color: white;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(2, 37, 90, 0.3);
+}
+
+.tab-label {
+  flex: 1;
+  text-align: left;
+}
+
+.tab-progress {
+  width: 100px;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.tab-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #BF080D, #02255A);
+  transition: width 0.3s ease;
+}
+
+.tab-progress-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  min-width: 36px;
+  text-align: right;
+}
+
+.tab-button.active .tab-progress-text {
+  color: #BF080D;
 }
 
 .tab-content {
@@ -399,5 +459,25 @@
 
   .header-content h1 {
     font-size: 1.2rem;
+  }
+
+  .tab-button {
+    flex-wrap: wrap;
+    padding: 8px 12px;
+  }
+
+  .tab-progress {
+    width: 80px;
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 4px;
+  }
+
+  .tab-progress-text {
+    display: none;
+  }
+
+  .tab-group-tabs {
+    flex-direction: column;
   }
 }

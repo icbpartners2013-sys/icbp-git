@@ -150,17 +150,55 @@ const ProfileDashboard = () => {
     );
   }
 
+  // Calculate progress for each tab
+  const calculateProgress = (tabId) => {
+    const sections = {
+      personal: profileData.personalInfo || {},
+      business: profileData.businessInfo || {},
+      taxServices: profileData.services?.taxServices || {},
+      cipcCompliance: profileData.services?.cipcCompliance || {},
+      payroll: profileData.services?.payrollServices || {},
+      accounting: profileData.services?.accountingAdvisory || {},
+      taxTransformation: profileData.services?.taxTransformation || {},
+      banking: profileData.bankingDetails || {},
+      documents: documents || {}
+    };
+    
+    const section = sections[tabId];
+    if (!section) return 0;
+    
+    const keys = Object.keys(section);
+    if (keys.length === 0) return 0;
+    
+    const filledFields = keys.filter(key => {
+      const value = section[key];
+      if (typeof value === 'object' && value !== null) {
+        return Object.values(value).some(v => v && v !== '');
+      }
+      return value && value !== '';
+    });
+    
+    return Math.round((filledFields.length / keys.length) * 100);
+  };
+
   const tabs = [
-    { id: "personal", label: "Personal Information" },
-    { id: "business", label: "Business Information" },
-    { id: "taxServices", label: "Tax Services" },
-    { id: "cipcCompliance", label: "CIPC Compliance" },
-    { id: "payroll", label: "Payroll Services" },
-    { id: "accounting", label: "Accounting Advisory" },
-    { id: "taxTransformation", label: "Tax Transformation" },
-    { id: "banking", label: "Banking Details" },
-    { id: "documents", label: "Document Uploads" },
+    { id: "personal", label: "Personal Information", group: "Profile" },
+    { id: "business", label: "Business Information", group: "Profile" },
+    { id: "taxServices", label: "Tax Services", group: "Services & Compliance" },
+    { id: "cipcCompliance", label: "CIPC Compliance", group: "Services & Compliance" },
+    { id: "payroll", label: "Payroll Services", group: "Services & Compliance" },
+    { id: "accounting", label: "Accounting Advisory", group: "Services & Compliance" },
+    { id: "taxTransformation", label: "Tax Transformation", group: "Services & Compliance" },
+    { id: "banking", label: "Banking Details", group: "Profile" },
+    { id: "documents", label: "Document Uploads", group: "File Center" },
   ];
+
+  // Group tabs by category
+  const tabGroups = {
+    "Profile": tabs.filter(tab => tab.group === "Profile"),
+    "Services & Compliance": tabs.filter(tab => tab.group === "Services & Compliance"),
+    "File Center": tabs.filter(tab => tab.group === "File Center")
+  };
 
   return (
     <div className="dashboard-container">
@@ -178,14 +216,31 @@ const ProfileDashboard = () => {
 
       <div className="dashboard-content">
         <nav className="tabs-nav">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </button>
+          {Object.entries(tabGroups).map(([groupName, groupTabs]) => (
+            <div key={groupName} className="tab-group">
+              <div className="tab-group-label">{groupName}</div>
+              <div className="tab-group-tabs">
+                {groupTabs.map((tab) => {
+                  const progress = calculateProgress(tab.id);
+                  return (
+                    <button
+                      key={tab.id}
+                      className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
+                      onClick={() => setActiveTab(tab.id)}
+                    >
+                      <span className="tab-label">{tab.label}</span>
+                      <div className="tab-progress">
+                        <div 
+                          className="tab-progress-bar" 
+                          style={{ width: `${progress}%` }}
+                        ></div>
+                      </div>
+                      <span className="tab-progress-text">{progress}%</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </nav>
 
