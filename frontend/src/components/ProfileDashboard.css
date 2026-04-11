@@ -897,11 +897,230 @@
   font-weight: 600;
   color: #666;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .progress-step.active {
   background: #02255A;
   color: white;
+  box-shadow: 0 2px 8px rgba(2, 37, 90, 0.3);
+}
+
+.progress-step.completed {
+  background: #059669;
+  color: white;
+}
+
+.progress-step.completed::after {
+  content: '✓';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #059669;
+  border: 2px solid #059669;
+}
+
+.onboarding-success {
+  text-align: center;
+  padding: 40px 20px;
+  background: #f0fff4;
+  border-radius: 12px;
+  border: 2px solid #a7f3d0;
+}
+
+.success-icon {
+  font-size: 48px;
+  color: #059669;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.onboarding-section h3 {
+  margin: 0 0 8px 0;
+  color: #02255A;
+  font-size: 1.2rem;
+}
+
+.section-description {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.entity-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entity-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.entity-description {
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.checkbox-group label:hover {
+  background: #F5F5F0;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #02255A;
+}
+
+.drag-drop-zone {
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: #F5F5F0;
+  cursor: pointer;
+}
+
+.drag-drop-zone:hover {
+  border-color: #02255A;
+  background: #F0F7FF;
+}
+
+.drag-drop-zone.drag-over {
+  border-color: #02255A;
+  background: #E6F0FF;
+  transform: translateY(-2px);
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropzone-icon {
+  font-size: 24px;
+}
+
+.dropzone-content p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.uploaded-file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f0fff4;
+  border-radius: 6px;
+  border: 1px solid #a7f3d0;
+}
+
+.uploaded-file-name {
+  color: #059669;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.upload-hint {
+  color: #BF080D;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.field-error {
+  color: #BF080D;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 4px;
+  display: block;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+  margin-top: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #BF080D;
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #BF080D 0%, #9a0609 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 14px 32px !important;
+  border-radius: 8px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 4px 12px rgba(191, 8, 13, 0.4) !important;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(191, 8, 13, 0.6) !important;
+  background: linear-gradient(135deg, #d60a0f 0%, #BF080D 100%) !important;
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0) !important;
+}
+
+.submit-button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
 }
 
 .onboarding-page {

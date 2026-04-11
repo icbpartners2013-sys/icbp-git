@@ -22,9 +22,65 @@ const ProfileDashboard = () => {
     'taxTimeline', 'complianceStatus', 'cashFlow', 'documentUpload', 'messagePreview', 'taxTip'
   ]);
   const [selectedServices, setSelectedServices] = useState([]);
-  const [entityType, setEntityType] = useState('business');
+  const [entityType, setEntityType] = useState('personal');
   const [currentPage, setCurrentPage] = useState(1);
   const [dropdownRef] = useState(null);
+  const [onboardingData, setOnboardingData] = useState({
+    // Step 2: Entity Info
+    personalInfo: {
+      fullName: '',
+      idTaxRef: '',
+      employmentStatus: '',
+      incomeBracket: ''
+    },
+    businessInfo: {
+      registeredName: '',
+      cipcNumber: '',
+      industry: '',
+      turnover: '',
+      financialYearEnd: ''
+    },
+    // Step 3: Services
+    services: [],
+    // Step 4: Service Deep Dive
+    serviceDetails: {
+      taxPersonal: {
+        incomeStreams: [],
+        residency: ''
+      },
+      taxBusiness: {
+        taxTypes: [],
+        vatNumber: ''
+      },
+      cipc: {
+        requestNature: ''
+      },
+      payroll: {
+        employeeCount: '',
+        payCycle: '',
+        statutoryChecklist: []
+      },
+      advisory: {
+        strategicFocus: [],
+        currentSoftware: ''
+      },
+      transformation: {
+        automationGoal: '',
+        primaryERP: ''
+      }
+    },
+    // Step 5: Documents
+    documents: {},
+    // Step 6: Contact
+    contact: {
+      email: '',
+      phone: '',
+      meetingTool: '',
+      dataConsent: false
+    }
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadProfileData();
@@ -497,6 +553,794 @@ const ProfileDashboard = () => {
     );
   };
 
+  // Helper to update onboarding data
+  const updateOnboardingData = (path, value) => {
+    setOnboardingData((prev) => {
+      const newData = JSON.parse(JSON.stringify(prev));
+      const keys = path.split('.');
+      let current = newData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      return newData;
+    });
+  };
+
+  // Get total steps based on selected services
+  const getTotalSteps = () => {
+    return 4 + selectedServices.length + 2; // Step 1 + Step 2 + Services + Step 3 + Step 4 + Step 5 + Step 6
+  };
+
+  // Calculate current step name for progress
+  const getStepName = (step) => {
+    if (step === 1) return 'Entity Type';
+    if (step === 2) return 'Entity Info';
+    if (step === 3) return 'Services';
+    if (step > 3 && step <= 3 + selectedServices.length) {
+      const serviceIndex = step - 4;
+      return serviceOptions[serviceIndex]?.name || `Service ${serviceIndex + 1}`;
+    }
+    if (step === 4 + selectedServices.length) return 'Documents';
+    if (step === 5 + selectedServices.length) return 'Contact';
+    return '';
+  };
+
+  // Validate email format (work email)
+  const isValidWorkEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && !email.includes('@gmail.com') && !email.includes('@yahoo.com') && !email.includes('@hotmail.com');
+  };
+
+  // Handle form submission
+  const handleSubmitOnboarding = async () => {
+    if (!onboardingData.contact.dataConsent) {
+      showMessage('error', 'Please accept the data consent to proceed.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsSubmitting(false);
+    setSubmitted(true);
+    showMessage('success', 'Your consultation request has been submitted successfully!');
+  };
+
+  // Options for form fields
+  const employmentStatusOptions = ['Salaried', 'Sole Proprietor', 'Retired', 'HNW (High Net Worth)'];
+  const incomeBracketOptions = ['< R500k', 'R500k - R1M', 'R1M - R5M', 'R5M - R10M', '> R10M'];
+  const industryOptions = ['Technology', 'Finance', 'Healthcare', 'Retail', 'Manufacturing', 'Professional Services', 'Other'];
+  const turnoverOptions = ['< R1M', 'R1M - R10M', 'R10M - R50M', 'R50M - R100M', '> R100M'];
+  const financialYearEndOptions = ['February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January'];
+  const incomeStreamOptions = ['Employment Income', 'Investment Income', 'Rental Income', 'Business Income', 'Capital Gains', 'Foreign Income', 'Other'];
+  const residencyOptions = ['South African Tax Resident', 'Non-Resident', 'Dual Resident'];
+  const taxTypeOptions = ['Corporate Income Tax', 'VAT', 'PAYE', 'Withholding Tax', 'Dividends Tax', 'Transfer Duty'];
+  const cipcRequestOptions = ['New Company Registration', 'Annual Returns', 'Director Changes', 'Share Transfers', 'Name Change', 'Deregistration'];
+  const employeeCountOptions = ['1-5', '6-20', '21-50', '51-100', '100+'];
+  const payCycleOptions = ['Monthly', 'Weekly', 'Bi-weekly', 'Semi-monthly'];
+  const statutoryOptions = ['UIF', 'SDL', 'PAYE', 'ETI'];
+  const strategicFocusOptions = ['Financial Planning', 'Risk Management', 'Cost Optimization', 'Growth Strategy', 'Succession Planning'];
+  const softwareOptions = ['QuickBooks', 'Xero', 'Sage', 'Pastel', 'Microsoft Dynamics', 'Other'];
+  const automationGoalOptions = ['Process Automation', 'Data Integration', 'Reporting Automation', 'Compliance Automation'];
+  const erpOptions = ['SAP', 'Oracle', 'Microsoft Dynamics', 'Sage', 'Other'];
+  const meetingToolOptions = ['Zoom', 'Microsoft Teams', 'Google Meet', 'Phone Call', 'In-Person'];
+
+  // Document requirements based on service and entity type
+  const getDocumentRequirements = () => {
+    const docs = [];
+    
+    // Common documents
+    if (entityType === 'personal') {
+      docs.push({ type: 'id_document', label: 'ID Document / Passport', hint: 'PDF, JPG, PNG (Max 5MB)' });
+      docs.push({ type: 'proof_address', label: 'Proof of Address', hint: 'Utility bill, Bank statement (Max 5MB)' });
+    } else {
+      docs.push({ type: 'company_registration', label: 'Company Registration Documents', hint: 'CoR 14.3, CoR 21.4 (Max 5MB)' });
+      docs.push({ type: 'bank_confirmation', label: 'Bank Confirmation Letter', hint: 'Recent bank statement (Max 5MB)' });
+    }
+
+    // Service-specific documents
+    if (selectedServices.includes('taxServices')) {
+      if (entityType === 'personal') {
+        docs.push({ type: 'irp5', label: 'IRP5/IT3(a) Certificates', hint: 'All employment income certificates (Max 5MB)' });
+        docs.push({ type: 'investment_income', label: 'Investment Income Statements', hint: 'IT3(b), IT3(c) (Max 5MB)' });
+      } else {
+        docs.push({ type: 'management_accounts', label: 'Management Accounts', hint: 'Latest management accounts (Max 5MB)' });
+        docs.push({ type: 'vat_returns', label: 'VAT Returns', hint: 'Last 12 months VAT201 (Max 5MB)' });
+      }
+    }
+
+    if (selectedServices.includes('accountingAdvisory')) {
+      docs.push({ type: 'financial_statements', label: 'Financial Statements', hint: 'Latest AFS or management accounts (Max 5MB)' });
+      docs.push({ type: 'budget_forecast', label: 'Budget/Forecast', hint: 'Current year budget (Max 5MB)' });
+    }
+
+    if (selectedServices.includes('payrollServices')) {
+      docs.push({ type: 'payroll_register', label: 'Current Payroll Register', hint: 'Latest payroll report (Max 5MB)' });
+      docs.push({ type: 'emp201', label: 'EMP201 Declarations', hint: 'Last 12 months (Max 5MB)' });
+    }
+
+    if (selectedServices.includes('cipcCompliance')) {
+      docs.push({ type: 'cor14_3', label: 'CoR 14.3', hint: 'Company registration certificate (Max 5MB)' });
+      docs.push({ type: 'cor21_4', label: 'CoR 21.4', hint: 'Share certificates (Max 5MB)' });
+    }
+
+    if (selectedServices.includes('taxTransformation')) {
+      docs.push({ type: 'current_erp', label: 'Current ERP System Details', hint: 'System documentation (Max 5MB)' });
+      docs.push({ type: 'process_map', label: 'Process Maps', hint: 'Current tax processes (Max 5MB)' });
+    }
+
+    return docs;
+  };
+
+  // Get step name for display
+  const getCurrentStepTitle = () => {
+    if (currentPage === 1) return 'Select Entity Type';
+    if (currentPage === 2) return 'Entity Information';
+    if (currentPage === 3) return 'Select Services';
+    if (currentPage > 3 && currentPage <= 3 + selectedServices.length) {
+      const serviceIndex = currentPage - 4;
+      return `${serviceOptions[serviceIndex]?.name} Details`;
+    }
+    if (currentPage === 4 + selectedServices.length) return 'Document Uploads';
+    if (currentPage === 5 + selectedServices.length) return 'Contact Information';
+    return '';
+  };
+
+  // Render the onboarding form based on current page
+  const renderOnboardingPage = () => {
+    // Success state
+    if (submitted) {
+      return (
+        <div className="onboarding-success">
+          <div className="success-icon">✓</div>
+          <h3>Request Submitted Successfully!</h3>
+          <p>A partner will review your data and contact you within 24 business hours.</p>
+          <button className="save-button" onClick={() => { setSubmitted(false); setCurrentPage(1); }}>
+            Start New Request
+          </button>
+        </div>
+      );
+    }
+
+    // Step 1: Entity Type
+    if (currentPage === 1) {
+      return (
+        <div className="onboarding-page">
+          <div className="onboarding-section">
+            <h3>📋 Select Entity Type</h3>
+            <p className="section-description">Are you onboarding as an individual or a business entity?</p>
+            <div className="entity-selection">
+              <button
+                className={`entity-option ${entityType === 'personal' ? 'selected' : ''}`}
+                onClick={() => { setEntityType('personal'); setSelectedServices([]); }}
+              >
+                <div className="entity-checkbox">
+                  {entityType === 'personal' && <span>✓</span>}
+                </div>
+                <div className="entity-details">
+                  <span className="entity-name">Individual / Personal</span>
+                  <span className="entity-description">For personal tax services and individual advisory</span>
+                </div>
+              </button>
+              <button
+                className={`entity-option ${entityType === 'business' ? 'selected' : ''}`}
+                onClick={() => { setEntityType('business'); setSelectedServices([]); }}
+              >
+                <div className="entity-checkbox">
+                  {entityType === 'business' && <span>✓</span>}
+                </div>
+                <div className="entity-details">
+                  <span className="entity-name">Business / Entity</span>
+                  <span className="entity-description">For company tax, CIPC, payroll and business advisory</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div className="onboarding-actions">
+            <button 
+              className="save-button"
+              onClick={() => setCurrentPage(2)}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 2: Entity Information
+    if (currentPage === 2) {
+      return (
+        <div className="onboarding-page">
+          <div className="onboarding-section">
+            <h3>📝 Entity Information</h3>
+            <p className="section-description">Please provide details about the entity being onboarded.</p>
+            
+            {entityType === 'personal' ? (
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>Full Name *</label>
+                  <input
+                    type="text"
+                    value={onboardingData.personalInfo.fullName}
+                    onChange={(e) => updateOnboardingData('personalInfo.fullName', e.target.value)}
+                    placeholder="Enter your full legal name"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>ID Number / Tax Reference *</label>
+                  <input
+                    type="text"
+                    value={onboardingData.personalInfo.idTaxRef}
+                    onChange={(e) => updateOnboardingData('personalInfo.idTaxRef', e.target.value)}
+                    placeholder="Enter ID number or tax reference"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Employment Status *</label>
+                  <select
+                    value={onboardingData.personalInfo.employmentStatus}
+                    onChange={(e) => updateOnboardingData('personalInfo.employmentStatus', e.target.value)}
+                  >
+                    <option value="">Select status</option>
+                    {employmentStatusOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group full-width">
+                  <label>Annual Income Bracket *</label>
+                  <select
+                    value={onboardingData.personalInfo.incomeBracket}
+                    onChange={(e) => updateOnboardingData('personalInfo.incomeBracket', e.target.value)}
+                  >
+                    <option value="">Select income bracket</option>
+                    {incomeBracketOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ) : (
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>Registered Company Name *</label>
+                  <input
+                    type="text"
+                    value={onboardingData.businessInfo.registeredName}
+                    onChange={(e) => updateOnboardingData('businessInfo.registeredName', e.target.value)}
+                    placeholder="Enter registered company name"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>CIPC Registration Number *</label>
+                  <input
+                    type="text"
+                    value={onboardingData.businessInfo.cipcNumber}
+                    onChange={(e) => updateOnboardingData('businessInfo.cipcNumber', e.target.value)}
+                    placeholder="e.g., 2024/123456/07"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Industry *</label>
+                  <select
+                    value={onboardingData.businessInfo.industry}
+                    onChange={(e) => updateOnboardingData('businessInfo.industry', e.target.value)}
+                  >
+                    <option value="">Select industry</option>
+                    {industryOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Annual Turnover *</label>
+                  <select
+                    value={onboardingData.businessInfo.turnover}
+                    onChange={(e) => updateOnboardingData('businessInfo.turnover', e.target.value)}
+                  >
+                    <option value="">Select turnover range</option>
+                    {turnoverOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Financial Year-End *</label>
+                  <select
+                    value={onboardingData.businessInfo.financialYearEnd}
+                    onChange={(e) => updateOnboardingData('businessInfo.financialYearEnd', e.target.value)}
+                  >
+                    <option value="">Select month</option>
+                    {financialYearEndOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="onboarding-actions">
+            <button 
+              className="secondary-button"
+              onClick={() => setCurrentPage(1)}
+            >
+              Back
+            </button>
+            <button 
+              className="save-button"
+              onClick={() => setCurrentPage(3)}
+              disabled={
+                (entityType === 'personal' && (!onboardingData.personalInfo.fullName || !onboardingData.personalInfo.idTaxRef || !onboardingData.personalInfo.employmentStatus || !onboardingData.personalInfo.incomeBracket)) ||
+                (entityType === 'business' && (!onboardingData.businessInfo.registeredName || !onboardingData.businessInfo.cipcNumber || !onboardingData.businessInfo.industry || !onboardingData.businessInfo.turnover || !onboardingData.businessInfo.financialYearEnd))
+              }
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 3: Select Services
+    if (currentPage === 3) {
+      return (
+        <div className="onboarding-page">
+          <div className="onboarding-section">
+            <h3>🛠️ Select Services</h3>
+            <p className="section-description">Choose the services you require. You can select multiple services.</p>
+            <div className="services-selection">
+              {serviceOptions
+                .filter(service => {
+                  // CIPC and Payroll are business only
+                  if (entityType === 'personal' && (service.id === 'cipcCompliance' || service.id === 'payrollServices')) {
+                    return false;
+                  }
+                  return true;
+                })
+                .map(service => (
+                  <button
+                    key={service.id}
+                    className={`service-option ${selectedServices.includes(service.id) ? 'selected' : ''}`}
+                    style={{ 
+                      '--service-color': service.color,
+                      borderColor: selectedServices.includes(service.id) ? service.color : '#e0e0e0'
+                    }}
+                    onClick={() => {
+                      setSelectedServices((prev) => 
+                        prev.includes(service.id)
+                          ? prev.filter(id => id !== service.id)
+                          : [...prev, service.id]
+                      );
+                    }}
+                  >
+                    <div className="service-checkbox">
+                      {selectedServices.includes(service.id) && <span>✓</span>}
+                    </div>
+                    <span className="service-name">{service.name}</span>
+                  </button>
+                ))}
+            </div>
+          </div>
+
+          <div className="onboarding-actions">
+            <button 
+              className="secondary-button"
+              onClick={() => setCurrentPage(2)}
+            >
+              Back
+            </button>
+            <button 
+              className="save-button"
+              onClick={() => setCurrentPage(4)}
+              disabled={selectedServices.length === 0}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 4: Service Deep Dive (dynamic based on selected services)
+    const serviceIndex = currentPage - 4;
+    if (currentPage > 3 && currentPage <= 3 + selectedServices.length) {
+      const serviceId = selectedServices[serviceIndex];
+      const service = serviceOptions.find(s => s.id === serviceId);
+      
+      return (
+        <div className="onboarding-page">
+          <div className="onboarding-section">
+            <h3>{service?.name} Details</h3>
+            <p className="section-description">Please provide additional information for {service?.name.toLowerCase()}.</p>
+            
+            {serviceId === 'taxServices' && entityType === 'personal' && (
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>Income Streams (Select all that apply) *</label>
+                  <div className="checkbox-group">
+                    {incomeStreamOptions.map(opt => (
+                      <label key={opt}>
+                        <input
+                          type="checkbox"
+                          checked={onboardingData.serviceDetails.taxPersonal.incomeStreams.includes(opt)}
+                          onChange={(e) => {
+                            const current = [...onboardingData.serviceDetails.taxPersonal.incomeStreams];
+                            if (e.target.checked) {
+                              current.push(opt);
+                            } else {
+                              const idx = current.indexOf(opt);
+                              if (idx > -1) current.splice(idx, 1);
+                            }
+                            updateOnboardingData('serviceDetails.taxPersonal.incomeStreams', current);
+                          }}
+                        />
+                        <span>{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-group full-width">
+                  <label>Tax Residency Status *</label>
+                  <select
+                    value={onboardingData.serviceDetails.taxPersonal.residency}
+                    onChange={(e) => updateOnboardingData('serviceDetails.taxPersonal.residency', e.target.value)}
+                  >
+                    <option value="">Select residency status</option>
+                    {residencyOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {serviceId === 'taxServices' && entityType === 'business' && (
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>Tax Types Required (Select all that apply) *</label>
+                  <div className="checkbox-group">
+                    {taxTypeOptions.map(opt => (
+                      <label key={opt}>
+                        <input
+                          type="checkbox"
+                          checked={onboardingData.serviceDetails.taxBusiness.taxTypes.includes(opt)}
+                          onChange={(e) => {
+                            const current = [...onboardingData.serviceDetails.taxBusiness.taxTypes];
+                            if (e.target.checked) {
+                              current.push(opt);
+                            } else {
+                              const idx = current.indexOf(opt);
+                              if (idx > -1) current.splice(idx, 1);
+                            }
+                            updateOnboardingData('serviceDetails.taxBusiness.taxTypes', current);
+                          }}
+                        />
+                        <span>{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-group full-width">
+                  <label>VAT Registration Number</label>
+                  <input
+                    type="text"
+                    value={onboardingData.serviceDetails.taxBusiness.vatNumber}
+                    onChange={(e) => updateOnboardingData('serviceDetails.taxBusiness.vatNumber', e.target.value)}
+                    placeholder="e.g., 4000123456"
+                  />
+                </div>
+              </div>
+            )}
+
+            {serviceId === 'cipcCompliance' && (
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>Nature of Request *</label>
+                  <select
+                    value={onboardingData.serviceDetails.cipc.requestNature}
+                    onChange={(e) => updateOnboardingData('serviceDetails.cipc.requestNature', e.target.value)}
+                  >
+                    <option value="">Select request type</option>
+                    {cipcRequestOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {serviceId === 'payrollServices' && (
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Number of Employees *</label>
+                  <select
+                    value={onboardingData.serviceDetails.payroll.employeeCount}
+                    onChange={(e) => updateOnboardingData('serviceDetails.payroll.employeeCount', e.target.value)}
+                  >
+                    <option value="">Select count</option>
+                    {employeeCountOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Pay Cycle *</label>
+                  <select
+                    value={onboardingData.serviceDetails.payroll.payCycle}
+                    onChange={(e) => updateOnboardingData('serviceDetails.payroll.payCycle', e.target.value)}
+                  >
+                    <option value="">Select cycle</option>
+                    {payCycleOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group full-width">
+                  <label>Statutory Requirements (Select all that apply) *</label>
+                  <div className="checkbox-group">
+                    {statutoryOptions.map(opt => (
+                      <label key={opt}>
+                        <input
+                          type="checkbox"
+                          checked={onboardingData.serviceDetails.payroll.statutoryChecklist.includes(opt)}
+                          onChange={(e) => {
+                            const current = [...onboardingData.serviceDetails.payroll.statutoryChecklist];
+                            if (e.target.checked) {
+                              current.push(opt);
+                            } else {
+                              const idx = current.indexOf(opt);
+                              if (idx > -1) current.splice(idx, 1);
+                            }
+                            updateOnboardingData('serviceDetails.payroll.statutoryChecklist', current);
+                          }}
+                        />
+                        <span>{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {serviceId === 'accountingAdvisory' && (
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>Strategic Focus Areas (Select all that apply) *</label>
+                  <div className="checkbox-group">
+                    {strategicFocusOptions.map(opt => (
+                      <label key={opt}>
+                        <input
+                          type="checkbox"
+                          checked={onboardingData.serviceDetails.advisory.strategicFocus.includes(opt)}
+                          onChange={(e) => {
+                            const current = [...onboardingData.serviceDetails.advisory.strategicFocus];
+                            if (e.target.checked) {
+                              current.push(opt);
+                            } else {
+                              const idx = current.indexOf(opt);
+                              if (idx > -1) current.splice(idx, 1);
+                            }
+                            updateOnboardingData('serviceDetails.advisory.strategicFocus', current);
+                          }}
+                        />
+                        <span>{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-group full-width">
+                  <label>Current Accounting Software *</label>
+                  <select
+                    value={onboardingData.serviceDetails.advisory.currentSoftware}
+                    onChange={(e) => updateOnboardingData('serviceDetails.advisory.currentSoftware', e.target.value)}
+                  >
+                    <option value="">Select software</option>
+                    {softwareOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {serviceId === 'taxTransformation' && (
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label>Automation Goals *</label>
+                  <select
+                    value={onboardingData.serviceDetails.transformation.automationGoal}
+                    onChange={(e) => updateOnboardingData('serviceDetails.transformation.automationGoal', e.target.value)}
+                  >
+                    <option value="">Select primary goal</option>
+                    {automationGoalOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group full-width">
+                  <label>Primary ERP System *</label>
+                  <select
+                    value={onboardingData.serviceDetails.transformation.primaryERP}
+                    onChange={(e) => updateOnboardingData('serviceDetails.transformation.primaryERP', e.target.value)}
+                  >
+                    <option value="">Select ERP</option>
+                    {erpOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="onboarding-actions">
+            <button 
+              className="secondary-button"
+              onClick={() => currentPage === 4 ? setCurrentPage(3) : setCurrentPage(currentPage - 1)}
+            >
+              Back
+            </button>
+            <button 
+              className="save-button"
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              {serviceIndex === selectedServices.length - 1 ? 'Continue to Documents' : 'Next Service'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 5: Document Uploads
+    if (currentPage === 4 + selectedServices.length) {
+      const docRequirements = getDocumentRequirements();
+      return (
+        <div className="onboarding-page">
+          <div className="onboarding-section">
+            <h3>📄 Document Uploads</h3>
+            <p className="section-description">Please upload the required documents. Drag and drop files or click to browse.</p>
+            
+            <div className="upload-section">
+              {docRequirements.map(doc => (
+                <div key={doc.type} className="upload-item">
+                  <label>{doc.label}</label>
+                  <div className="drag-drop-zone">
+                    <div className="dropzone-content">
+                      <div className="dropzone-icon">📁</div>
+                      <p>Drag & drop file here or click to browse</p>
+                      <input 
+                        type="file" 
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            updateOnboardingData(`documents.${doc.type}`, file.name);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {onboardingData.documents[doc.type] && (
+                    <div className="uploaded-file-info">
+                      <span className="uploaded-file-name">✓ {onboardingData.documents[doc.type]}</span>
+                      <button 
+                        className="remove-doc-button"
+                        onClick={() => updateOnboardingData(`documents.${doc.type}`, '')}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  <span className="upload-hint">{doc.hint}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="onboarding-actions">
+            <button 
+              className="secondary-button"
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Back
+            </button>
+            <button 
+              className="save-button"
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Continue to Contact
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 6: Contact Information
+    if (currentPage === 5 + selectedServices.length) {
+      return (
+        <div className="onboarding-page">
+          <div className="onboarding-section">
+            <h3>📧 Contact Information</h3>
+            <p className="section-description">Provide your contact details so we can reach you about your consultation.</p>
+            
+            <div className="form-grid">
+              <div className="form-group full-width">
+                <label>Work Email Address *</label>
+                <input
+                  type="email"
+                  value={onboardingData.contact.email}
+                  onChange={(e) => updateOnboardingData('contact.email', e.target.value)}
+                  placeholder="your.name@company.com"
+                />
+                {onboardingData.contact.email && !isValidWorkEmail(onboardingData.contact.email) && (
+                  <span className="field-error">Please enter a valid work email address</span>
+                )}
+              </div>
+              <div className="form-group full-width">
+                <label>Phone Number *</label>
+                <input
+                  type="tel"
+                  value={onboardingData.contact.phone}
+                  onChange={(e) => updateOnboardingData('contact.phone', e.target.value)}
+                  placeholder="+27 XX XXX XXXX"
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>Preferred Meeting Tool *</label>
+                <select
+                  value={onboardingData.contact.meetingTool}
+                  onChange={(e) => updateOnboardingData('contact.meetingTool', e.target.value)}
+                >
+                  <option value="">Select meeting tool</option>
+                  {meetingToolOptions.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group full-width">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={onboardingData.contact.dataConsent}
+                    onChange={(e) => updateOnboardingData('contact.dataConsent', e.target.checked)}
+                  />
+                  <span>I consent to ICBP processing my personal data in accordance with the POPIA and privacy policy. *</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="onboarding-actions">
+            <button 
+              className="secondary-button"
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Back
+            </button>
+            <button 
+              className="save-button submit-button"
+              onClick={handleSubmitOnboarding}
+              disabled={
+                isSubmitting ||
+                !isValidWorkEmail(onboardingData.contact.email) ||
+                !onboardingData.contact.phone ||
+                !onboardingData.contact.meetingTool ||
+                !onboardingData.contact.dataConsent
+              }
+            >
+              {isSubmitting ? 'Submitting...' : 'Request Secure Consultation'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
@@ -817,178 +1661,24 @@ const ProfileDashboard = () => {
               
               {/* Page Progress Indicator */}
               <div className="onboarding-progress">
-                <div className="progress-step active">Select Service</div>
-                {selectedServices.map((serviceId, index) => {
-                  const service = serviceOptions.find(s => s.id === serviceId);
+                {Array.from({ length: getTotalSteps() }, (_, i) => {
+                  const step = i + 1;
+                  const isActive = step <= currentPage;
+                  const isCurrent = step === currentPage;
+                  
                   return (
-                    <div key={serviceId} className="progress-step">
-                      {service?.name}
+                    <div 
+                      key={step} 
+                      className={`progress-step ${isCurrent ? 'active' : ''} ${isActive ? 'completed' : ''}`}
+                    >
+                      {getStepName(step)}
                     </div>
                   );
                 })}
-                <div className="progress-step">Document Uploads</div>
               </div>
 
-              {/* Page 1: Select Service */}
-              {currentPage === 1 && (
-                <div className="onboarding-page">
-                  <div className="onboarding-section">
-                    <h3>📋 Entity Type</h3>
-                    <div className="entity-selection">
-                      <button
-                        className={`entity-option ${entityType === 'business' ? 'selected' : ''}`}
-                        onClick={() => setEntityType('business')}
-                      >
-                        <div className="entity-checkbox">
-                          {entityType === 'business' && <span>✓</span>}
-                        </div>
-                        <span className="entity-name">Business</span>
-                      </button>
-                      <button
-                        className={`entity-option ${entityType === 'personal' ? 'selected' : ''}`}
-                        onClick={() => setEntityType('personal')}
-                      >
-                        <div className="entity-checkbox">
-                          {entityType === 'personal' && <span>✓</span>}
-                        </div>
-                        <span className="entity-name">Personal</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="onboarding-section">
-                    <h3>🛠️ Add Services</h3>
-                    <p className="services-hint">Select the services you need</p>
-                    <div className="services-selection">
-                      {serviceOptions.map(service => (
-                        <button
-                          key={service.id}
-                          className={`service-option ${selectedServices.includes(service.id) ? 'selected' : ''}`}
-                          style={{ 
-                            '--service-color': service.color,
-                            borderColor: selectedServices.includes(service.id) ? service.color : '#e0e0e0'
-                          }}
-                          onClick={() => {
-                            setSelectedServices((prev) => 
-                              prev.includes(service.id)
-                                ? prev.filter(id => id !== service.id)
-                                : [...prev, service.id]
-                            );
-                          }}
-                        >
-                          <div className="service-checkbox">
-                            {selectedServices.includes(service.id) && <span>✓</span>}
-                          </div>
-                          <span className="service-name">{service.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="onboarding-actions">
-                    <button 
-                      className="save-button"
-                      onClick={() => setCurrentPage(2)}
-                      disabled={selectedServices.length === 0}
-                    >
-                      Continue to Forms
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Service Form Pages */}
-              {currentPage > 1 && currentPage <= selectedServices.length + 1 && (
-                <div className="onboarding-page">
-                  <div className="service-form-page">
-                    <h3>{serviceOptions.find(s => s.id === selectedServices[currentPage - 2])?.name} Form</h3>
-                    
-                    <div className="form-grid">
-                      <div className="form-group">
-                        <label>Full Name</label>
-                        <input type="text" placeholder="Enter your full name" />
-                      </div>
-                      <div className="form-group">
-                        <label>Email Address</label>
-                        <input type="email" placeholder="Enter your email" />
-                      </div>
-                      <div className="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" placeholder="Enter your phone number" />
-                      </div>
-                      <div className="form-group">
-                        <label>Company Name</label>
-                        <input type="text" placeholder="Enter company name" />
-                      </div>
-                    </div>
-
-                    <div className="onboarding-actions">
-                      <button 
-                        className="secondary-button"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                      >
-                        Back
-                      </button>
-                      <button 
-                        className="save-button"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                      >
-                        {currentPage === selectedServices.length + 1 ? 'Continue to Uploads' : 'Next Service'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Document Uploads Page */}
-              {currentPage === selectedServices.length + 2 && (
-                <div className="onboarding-page">
-                  <div className="document-uploads-page">
-                    <h3>📄 Document Uploads</h3>
-                    <p className="upload-instructions">Please upload the required documents to complete your onboarding</p>
-                    
-                    <div className="upload-section">
-                      <div className="upload-item">
-                        <label>ID Document / Passport</label>
-                        <input type="file" />
-                        <span>PDF, JPG, PNG (Max 5MB)</span>
-                      </div>
-                      <div className="upload-item">
-                        <label>Proof of Address</label>
-                        <input type="file" />
-                        <span>Utility bill, Bank statement (Max 5MB)</span>
-                      </div>
-                      <div className="upload-item">
-                        <label>Company Registration Documents</label>
-                        <input type="file" />
-                        <span>CoR 14.3, CoR 21.4 (Max 5MB)</span>
-                      </div>
-                      <div className="upload-item">
-                        <label>Bank Confirmation Letter</label>
-                        <input type="file" />
-                        <span>Recent bank statement (Max 5MB)</span>
-                      </div>
-                      <div className="upload-item">
-                        <label>SARS Tax Compliance Status</label>
-                        <input type="file" />
-                        <span>TCS Pin or Certificate (Max 5MB)</span>
-                      </div>
-                    </div>
-
-                    <div className="onboarding-actions">
-                      <button 
-                        className="secondary-button"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                      >
-                        Back
-                      </button>
-                      <button className="save-button">
-                        Complete Onboarding
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Render the appropriate onboarding page */}
+              {renderOnboardingPage()}
             </div>
           )}
 
