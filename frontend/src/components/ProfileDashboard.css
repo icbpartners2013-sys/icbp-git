@@ -71,6 +71,10 @@
   padding: 24px;
 }
 
+.dashboard-content>div>h2 {
+  padding-bottom: 20px;
+}
+
 /* Tab Content Styles */
 .dashboard-tab, .documents-tab, .reports-tab, .tasks-tab, .messages-tab, .onboarding-tab, .taxcalendar-tab, .guidelines-tab {
   background: white;
