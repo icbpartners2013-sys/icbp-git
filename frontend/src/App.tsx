@@ -1,15 +1,63 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+// Axios Interceptor for injecting JWT token
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+function Login({ setToken }: { setToken: (token: string | null) => void }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${API_URL}/api/token/`, { username, password });
+      localStorage.setItem('access_token', res.data.access);
+      localStorage.setItem('refresh_token', res.data.refresh);
+      setToken(res.data.access);
+      navigate('/');
+    } catch (err) {
+      setError('Invalid credentials. Please try again.');
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-[80vh]">
+      <div className="bg-white p-8 rounded-xl shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Secure Login</h2>
+        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" value={username} onChange={e => setUsername(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" value={password} onChange={e => setPassword(e.target.value)} />
+          </div>
+          <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 font-bold transition">Sign In</button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 function ClientDashboard() {
   const [invoices, setInvoices] = useState([]);
   const [taxReturns, setTaxReturns] = useState([]);
 
   useEffect(() => {
-    // In a real app, you would pass authentication headers here
     axios.get(`${API_URL}/ledger/api/invoices/`).then(res => setInvoices(res.data)).catch(() => {});
     axios.get(`${API_URL}/tax/api/tax_returns/`).then(res => setTaxReturns(res.data)).catch(() => {});
   }, []);
@@ -17,15 +65,10 @@ function ClientDashboard() {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Client Portal</h1>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
         {/* Billing Widget */}
         <div className="bg-white shadow-md rounded-xl p-6 border-t-4 border-blue-500">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700 flex items-center">
-            <svg className="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-            Billing & Invoices
-          </h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Billing & Invoices</h2>
           {invoices.length === 0 ? (
             <p className="text-sm text-gray-500 italic">No pending invoices.</p>
           ) : (
@@ -43,10 +86,7 @@ function ClientDashboard() {
 
         {/* Tax Returns Widget */}
         <div className="bg-white shadow-md rounded-xl p-6 border-t-4 border-green-500">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700 flex items-center">
-            <svg className="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            Tax Compliance
-          </h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Tax Compliance</h2>
           {taxReturns.length === 0 ? (
             <p className="text-sm text-gray-500 italic">No active tax filings.</p>
           ) : (
@@ -67,29 +107,30 @@ function ClientDashboard() {
 
         {/* Document Vault Widget */}
         <div className="bg-white shadow-md rounded-xl p-6 border-t-4 border-purple-500">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700 flex items-center">
-            <svg className="w-6 h-6 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            Secure Vault
-          </h2>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition cursor-pointer">
-            <svg className="mx-auto h-8 w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            <p className="mt-1 text-sm text-gray-500">Drag & drop files or click to upload</p>
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Secure Vault</h2>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 cursor-pointer">
+            <p className="mt-1 text-sm text-gray-500">Click to upload documents</p>
           </div>
           <button className="mt-4 w-full bg-purple-50 text-purple-600 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition">View All Documents</button>
         </div>
-
       </div>
     </div>
   );
 }
 
 function StaffDashboard() {
+  const [engagements, setEngagements] = useState([]);
+  
+  useEffect(() => {
+    axios.get(`${API_URL}/audit/api/engagements/`).then(res => setEngagements(res.data)).catch(() => {});
+  }, []);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Staff Portal</h1>
-          <p className="text-gray-500 mt-1">Welcome back. You have 3 engagements requiring review.</p>
+          <p className="text-gray-500 mt-1">Welcome back. You have active engagements.</p>
         </div>
         <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium shadow hover:bg-blue-700 transition">
           + New Time Entry
@@ -97,69 +138,39 @@ function StaffDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Main Workflow */}
         <div className="lg:col-span-2 space-y-8">
-          
           <div className="bg-white shadow-md rounded-xl p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Active Engagements</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="text-gray-400 text-sm border-b">
-                    <th className="pb-2">Client</th>
+                    <th className="pb-2">Client ID</th>
                     <th className="pb-2">Service</th>
                     <th className="pb-2">Deadline</th>
                     <th className="pb-2">Status</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
-                  <tr className="border-b hover:bg-gray-50">
-                    <td className="py-3 font-medium text-gray-800">Acme Corp Ltd</td>
-                    <td className="py-3 text-gray-600">Statutory Audit</td>
-                    <td className="py-3 text-gray-600">Oct 31, 2026</td>
-                    <td className="py-3"><span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-semibold">Fieldwork</span></td>
-                  </tr>
-                  <tr className="border-b hover:bg-gray-50">
-                    <td className="py-3 font-medium text-gray-800">John Doe (HNWI)</td>
-                    <td className="py-3 text-gray-600">ITR12 Tax Return</td>
-                    <td className="py-3 text-gray-600">Nov 15, 2026</td>
-                    <td className="py-3"><span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">Review</span></td>
-                  </tr>
-                  <tr className="hover:bg-gray-50">
-                    <td className="py-3 font-medium text-gray-800">StartUp Tech</td>
-                    <td className="py-3 text-gray-600">Monthly Payroll</td>
-                    <td className="py-3 text-gray-600">Oct 25, 2026</td>
-                    <td className="py-3"><span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Completed</span></td>
-                  </tr>
+                  {engagements.length === 0 ? (
+                    <tr><td colSpan={4} className="py-4 text-center text-gray-500">No active engagements.</td></tr>
+                  ) : (
+                    engagements.map((eng: any) => (
+                      <tr key={eng.id} className="border-b hover:bg-gray-50">
+                        <td className="py-3 font-medium text-gray-800">Client #{eng.client}</td>
+                        <td className="py-3 text-gray-600">{eng.name}</td>
+                        <td className="py-3 text-gray-600">{eng.financial_year_end}</td>
+                        <td className="py-3"><span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-semibold">{eng.status}</span></td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
-
-          <div className="bg-white shadow-md rounded-xl p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Recent Working Papers</h2>
-            <ul className="space-y-3 text-sm">
-              <li className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" /></svg>
-                  <span className="font-medium text-gray-700">Bank_Reconciliation_Q3.xlsx</span>
-                </div>
-                <span className="text-xs text-gray-500">Prepared by A. Smith</span>
-              </li>
-              <li className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" /></svg>
-                  <span className="font-medium text-gray-700">Trial_Balance_Draft.pdf</span>
-                </div>
-                <span className="text-xs text-red-500 font-medium">Pending Review</span>
-              </li>
-            </ul>
-          </div>
         </div>
 
-        {/* Right Column - Sidebar */}
         <div className="space-y-8">
-          
           <div className="bg-gray-800 text-white shadow-md rounded-xl p-6">
             <h2 className="text-lg font-bold mb-4 border-b border-gray-700 pb-2">My Time (This Week)</h2>
             <div className="text-4xl font-light mb-2">32.5 <span className="text-lg text-gray-400">hrs</span></div>
@@ -171,16 +182,6 @@ function StaffDashboard() {
               <span>Target: 40.0h</span>
             </div>
           </div>
-
-          <div className="bg-white shadow-md rounded-xl p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Quick Actions</h2>
-            <div className="space-y-2">
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border rounded-lg transition">Submit Expenses</button>
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border rounded-lg transition">Request Leave</button>
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border rounded-lg transition">Firm Directory</button>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -188,11 +189,17 @@ function StaffDashboard() {
 }
 
 function App() {
+  const [token, setToken] = useState<string | null>(localStorage.getItem('access_token'));
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    setToken(null);
+  };
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-        
-        {/* Global Navigation */}
         <header className="bg-slate-900 text-white shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
@@ -200,22 +207,21 @@ function App() {
                 <div className="flex-shrink-0 font-bold text-xl tracking-wider text-blue-400">
                   <span className="text-white">ERP</span>Core
                 </div>
-                <div className="hidden md:block ml-10">
-                  <div className="flex items-baseline space-x-4">
-                    <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">Client Portal</Link>
-                    <Link to="/staff" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">Staff Portal</Link>
+                {token && (
+                  <div className="hidden md:block ml-10">
+                    <div className="flex items-baseline space-x-4">
+                      <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">Client Portal</Link>
+                      <Link to="/staff" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">Staff Portal</Link>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
               <div className="flex items-center gap-3">
-                <button className="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                </button>
-                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-sm">
-                  JD
-                </div>
+                {token ? (
+                  <button onClick={handleLogout} className="text-sm font-bold text-red-400 hover:text-red-300">Logout</button>
+                ) : (
+                  <Link to="/login" className="text-sm font-bold text-blue-400 hover:text-blue-300">Login</Link>
+                )}
               </div>
             </div>
           </div>
@@ -223,11 +229,11 @@ function App() {
         
         <main className="flex-1 pb-12">
           <Routes>
-            <Route path="/" element={<ClientDashboard />} />
-            <Route path="/staff" element={<StaffDashboard />} />
+            <Route path="/login" element={!token ? <Login setToken={setToken} /> : <Navigate to="/" />} />
+            <Route path="/" element={token ? <ClientDashboard /> : <Navigate to="/login" />} />
+            <Route path="/staff" element={token ? <StaffDashboard /> : <Navigate to="/login" />} />
           </Routes>
         </main>
-
       </div>
     </Router>
   );
