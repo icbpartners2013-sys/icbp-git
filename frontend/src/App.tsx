@@ -17,7 +17,7 @@ import OnboardingForms from './pages/client/OnboardingForms';
 import StaffDashboard from './pages/staff/StaffDashboard';
 
 export default function App() {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('access_token'));
+  const [token] = useState<string | null>(localStorage.getItem('access_token'));
 
   // A simple auth guard wrapper
   const RequireAuth = ({ children }: { children: React.ReactNode }) => {
