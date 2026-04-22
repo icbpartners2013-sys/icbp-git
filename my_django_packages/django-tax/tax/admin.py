@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import TaxReturn, TaxOrganizer
 
-# Register your models here.
+admin.site.register(TaxReturn)
+admin.site.register(TaxOrganizer)
