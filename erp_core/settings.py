@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'base.User'
+TENANT_MODEL = 'base.Tenant'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
