@@ -1,0 +1,14 @@
+pyproject.toml
+django_tax.egg-info/PKG-INFO
+django_tax.egg-info/SOURCES.txt
+django_tax.egg-info/dependency_links.txt
+django_tax.egg-info/requires.txt
+django_tax.egg-info/top_level.txt
+tax/__init__.py
+tax/admin.py
+tax/apps.py
+tax/models.py
+tax/tests.py
+tax/urls.py
+tax/views.py
+tax/migrations/__init__.py

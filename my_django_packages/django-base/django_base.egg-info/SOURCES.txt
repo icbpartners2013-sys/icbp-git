@@ -1,0 +1,14 @@
+pyproject.toml
+base/__init__.py
+base/admin.py
+base/apps.py
+base/models.py
+base/tests.py
+base/urls.py
+base/views.py
+base/migrations/__init__.py
+django_base.egg-info/PKG-INFO
+django_base.egg-info/SOURCES.txt
+django_base.egg-info/dependency_links.txt
+django_base.egg-info/requires.txt
+django_base.egg-info/top_level.txt
