@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Layouts
@@ -30,7 +30,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={!token ? <Login setToken={setToken} /> : <Navigate to="/" />} />
+        <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
         
         <Route element={<MainLayout />}>
           <Route path="/" element={<RequireAuth><ClientDashboard /></RequireAuth>} />
