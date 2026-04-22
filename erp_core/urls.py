@@ -16,8 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Welcome to the Accounting ERP API/System. Please navigate to /admin or specific app endpoints.")
 
 urlpatterns = [
+    path('', home, name='home'),
     path('admin/', admin.site.urls),
     path('base/', include('base.urls')),
     path('audit/', include('audit.urls')),
