@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+  --color-icbp-dark: #0f172a;
+  --color-icbp-blue-400: #60a5fa;
+  --color-icbp-blue-500: #3b82f6;
+  --color-icbp-blue-600: #2563eb;
+  --color-icbp-blue-700: #1d4ed8;
+  --color-icbp-blue-800: #1e40af;
+  --color-icbp-gray-50: #f8fafc;
+}
