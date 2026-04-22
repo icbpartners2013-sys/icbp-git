@@ -28,7 +28,10 @@ export default function Login() {
     <div className="min-h-screen bg-icbp-gray-50 flex flex-col">
       <header className="bg-white shadow-sm py-4 px-8 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <img src="/logo-light.jpg" alt="ICBP Logo" className="h-8 w-auto rounded" onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=ICBP&background=1d4ed8&color=fff'; }} />
+          <img src="/logo-light.jpg" alt="ICBP Logo" className="h-10 w-auto rounded" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://ui-avatars.com/api/?name=ICBP&background=1d4ed8&color=fff'; }} />
+          <span className="font-bold text-xl tracking-wider text-icbp-blue-600">
+            <span className="text-gray-800">ICBP</span> Portal
+          </span>
         </div>
         <a href="#" className="text-sm font-medium text-icbp-blue-600 hover:text-icbp-blue-800">Help / Support</a>
       </header>

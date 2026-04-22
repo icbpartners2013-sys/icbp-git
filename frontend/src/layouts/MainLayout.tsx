@@ -17,7 +17,7 @@ export default function MainLayout() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center gap-2">
-                <img src="/logo-light.jpg" alt="ICBP Logo" className="h-8 w-auto rounded" onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=ICBP&background=1d4ed8&color=fff'; }} />
+                <img src="/logo-light.jpg" alt="ICBP Logo" className="h-8 w-auto rounded" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://ui-avatars.com/api/?name=ICBP&background=1d4ed8&color=fff'; }} />
                 <span className="font-bold text-xl tracking-wider text-icbp-blue-400 hidden sm:block">
                   <span className="text-white">ICBP</span> Portal
                 </span>
