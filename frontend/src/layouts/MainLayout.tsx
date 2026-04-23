@@ -1,3 +1,4 @@
+
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 
 export default function MainLayout() {
@@ -16,27 +17,39 @@ export default function MainLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center gap-2">
+              <Link to="/" className="flex-shrink-0 flex items-center gap-2">
                 <img src="/logo-light.jpg" alt="ICBP Logo" className="h-8 w-auto rounded" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://ui-avatars.com/api/?name=ICBP&background=1d4ed8&color=fff'; }} />
                 <span className="font-bold text-xl tracking-wider text-icbp-blue-400 hidden sm:block">
-                  <span className="text-white">ICBP</span> Portal
+                  <span className="text-white">ICBP</span>
                 </span>
-              </div>
-              {token && (
-                <div className="hidden md:block ml-10">
-                  <div className="flex items-baseline space-x-4">
-                    <Link to="/client/dashboard" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">Client Area</Link>
-                    <Link to="/staff/dashboard" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">Staff Area</Link>
-                    <Link to="/shop" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">Shop Services</Link>
-                  </div>
+              </Link>
+              
+              {/* Public Website Menu */}
+              <div className="hidden md:block ml-10">
+                <div className="flex items-baseline space-x-2">
+                  <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition">Home</Link>
+                  <Link to="/shop" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition">Services / Shop</Link>
+                  <a href="#" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition">About Us</a>
+                  <a href="#" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition">Contact</a>
+                  
+                  {/* Secure Portal Links if Logged In */}
+                  {token && (
+                    <>
+                      <span className="text-gray-600 mx-2">|</span>
+                      <Link to="/client/dashboard" className="px-3 py-2 rounded-md text-sm font-bold text-icbp-blue-400 hover:bg-slate-800 transition">Client Portal</Link>
+                      <Link to="/staff/dashboard" className="px-3 py-2 rounded-md text-sm font-bold text-purple-400 hover:bg-slate-800 transition">Staff Portal</Link>
+                    </>
+                  )}
                 </div>
-              )}
+              </div>
+
             </div>
+            
             <div className="flex items-center gap-3">
               {token ? (
                 <button onClick={handleLogout} className="text-sm font-bold text-red-400 hover:text-red-300">Logout</button>
               ) : (
-                <Link to="/login" className="text-sm font-bold text-icbp-blue-400 hover:text-blue-300">Login</Link>
+                <Link to="/login" className="bg-icbp-blue-600 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-icbp-blue-500 transition shadow-sm">Client Login</Link>
               )}
             </div>
           </div>

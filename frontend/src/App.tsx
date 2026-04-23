@@ -92,6 +92,7 @@ import SecurityLogs from './pages/staff/features/SecurityLogs';
 import PayrollProcessing from './pages/staff/features/PayrollProcessing';
 import Performance from './pages/staff/features/Performance';
 import ApplicantTracking from './pages/staff/features/ApplicantTracking';
+import ProductsManagement from './pages/staff/features/ProductsManagement';
 
 export default function App() {
   const [token] = useState<string | null>(localStorage.getItem('access_token'));
@@ -173,6 +174,7 @@ export default function App() {
           <Route path="/client/tasks" element={<RequireAuth><Tasks /></RequireAuth>} />
           
           {/* AUTO GENERATED STAFF ROUTES */}
+          <Route path="/staff/products" element={<RequireAuth><ProductsManagement /></RequireAuth>} />
           <Route path="/staff/time-tracking" element={<RequireAuth><TimeTracking /></RequireAuth>} />
           <Route path="/staff/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
           <Route path="/staff/directory" element={<RequireAuth><Directory /></RequireAuth>} />
