@@ -8,6 +8,7 @@ import MainLayout from './layouts/MainLayout';
 import Login from './pages/public/Login';
 import Shop from './pages/public/Shop';
 import Checkout from './pages/public/Checkout';
+import Home from './pages/public/Home';
 
 // Client Pages
 import ClientDashboard from './pages/client/ClientDashboard';
@@ -109,9 +110,10 @@ export default function App() {
         <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
         
         <Route element={<MainLayout />}>
-          <Route path="/" element={<RequireAuth><ClientDashboard /></RequireAuth>} />
           
           {/* Public / Semi-Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/checkout" element={<Checkout />} />
           
