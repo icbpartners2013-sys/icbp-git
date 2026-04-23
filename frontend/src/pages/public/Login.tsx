@@ -83,6 +83,16 @@ export default function Login() {
               </button>
             </form>
 
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Quick Demo Accounts (Password: Password123!)</p>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => {setUsername('partner@test.com'); setPassword('Password123!'); setLoginType('STAFF');}} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded hover:bg-slate-200">Partner</button>
+                <button onClick={() => {setUsername('associate@test.com'); setPassword('Password123!'); setLoginType('STAFF');}} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded hover:bg-slate-200">Staff</button>
+                <button onClick={() => {setUsername('business.client@test.com'); setPassword('Password123!'); setLoginType('CLIENT');}} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100">Business</button>
+                <button onClick={() => {setUsername('personal.client@test.com'); setPassword('Password123!'); setLoginType('CLIENT');}} className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100">Personal</button>
+              </div>
+            </div>
+
             <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
