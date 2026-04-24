@@ -53,32 +53,6 @@ export default function ClientDashboard() {
         </div>
       </aside>
 
-      {/* Sidebar Admin Nav */}
-      <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col h-full border-r border-slate-800">
-        <div className="h-16 flex items-center px-6 border-b border-slate-800">
-          <img src="/logo-light.jpg" alt="ICBP Logo" className="h-8 w-auto rounded mr-3" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://ui-avatars.com/api/?name=ICBP&background=1d4ed8&color=fff'; }} />
-          <span className="font-bold text-lg text-white">Client Portal</span>
-        </div>
-        
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          <p className="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">OVERVIEW</p>
-          <Link to="/client/dashboard" className="flex items-center gap-3 px-3 py-2 bg-icbp-blue-600 text-white rounded-md transition"><LayoutDashboard size={18} /> Dashboard</Link>
-          <Link to="/client/documents" className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md transition"><FolderOpen size={18} /> Documents</Link>
-          <Link to="/client/tasks" className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md transition"><CheckSquare size={18} /> Tasks</Link>
-          
-          <p className="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">SERVICES</p>
-          <Link to="/client/billing" className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md transition"><Receipt size={18} /> Billing & Invoices</Link>
-          <Link to="/client/personal/income-tax" className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md transition"><Calculator size={18} /> Tax Returns</Link>
-          <Link to="/client/business/company-secretarial" className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md transition"><PieChart size={18} /> CIPC & Secretarial</Link>
-        </nav>
-        
-        <div className="p-4 border-t border-slate-800">
-          <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2 w-full text-slate-400 hover:text-white hover:bg-slate-800 rounded-md transition">
-            <LogOut size={18} /> Logout
-          </button>
-        </div>
-      </aside>
-
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         

@@ -108,7 +108,7 @@ else:
         )
     }
     # Add this right below the DATABASES definition to be 100% safe
-    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+    # DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
