@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-icbp-dark: #0f172a;
-  --color-icbp-blue-400: #60a5fa;
-  --color-icbp-blue-500: #3b82f6;
-  --color-icbp-blue-600: #2563eb;
-  --color-icbp-blue-700: #1d4ed8;
-  --color-icbp-blue-800: #1e40af;
-  --color-icbp-gray-50: #f8fafc;
+  --color-icbp-dark: #02255A;       /* Your primary deep navy */
+  --color-icbp-blue-400: #639EF6;  /* Vibrant sky accent */
+  --color-icbp-blue-500: #3883F4;  /* Standard UI blue */
+  --color-icbp-blue-600: #2172ED;  /* Interactive state blue */
+  --color-icbp-blue-700: #1866DC;  /* Darker interactive blue */
+  --color-icbp-blue-800: #1E57AD;  /* Muted navy-blue */
+  --color-icbp-gray-50: #F9F9FA;   /* Clean off-white background */
 }
+  

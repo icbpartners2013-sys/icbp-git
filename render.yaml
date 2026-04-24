@@ -1,18 +1,18 @@
 databases:
-  - name: erp_db
-    databaseName: erp_db
-    user: erp_user
+  - name: icbp-db  # Changed from erp_db
+    databaseName: icbp_db
+    user: icbp_db_user
 
 services:
   - type: web
-    name: erp-web
+    name: icbp-git
     runtime: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn erp_core.wsgi:application"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: erp_db
+          name: icbp-db
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
