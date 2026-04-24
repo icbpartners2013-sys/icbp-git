@@ -8,7 +8,9 @@ ledger/__init__.py
 ledger/admin.py
 ledger/apps.py
 ledger/models.py
+ledger/serializers.py
 ledger/tests.py
 ledger/urls.py
 ledger/views.py
+ledger/migrations/0001_initial.py
 ledger/migrations/__init__.py

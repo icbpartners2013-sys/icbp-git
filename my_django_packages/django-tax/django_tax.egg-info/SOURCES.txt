@@ -8,7 +8,9 @@ tax/__init__.py
 tax/admin.py
 tax/apps.py
 tax/models.py
+tax/serializers.py
 tax/tests.py
 tax/urls.py
 tax/views.py
+tax/migrations/0001_initial.py
 tax/migrations/__init__.py

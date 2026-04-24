@@ -3,9 +3,14 @@ base/__init__.py
 base/admin.py
 base/apps.py
 base/models.py
+base/permissions.py
+base/serializers.py
 base/tests.py
 base/urls.py
 base/views.py
+base/migrations/0001_initial.py
+base/migrations/0002_user_client_subtype_user_client_type_user_staff_role_and_more.py
+base/migrations/0003_service_is_active_service_price.py
 base/migrations/__init__.py
 django_base.egg-info/PKG-INFO
 django_base.egg-info/SOURCES.txt

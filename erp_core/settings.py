@@ -106,8 +106,8 @@ else:
             ssl_require=True  # This is the critical fix for Render
         )
     }
-# Add this right below the DATABASES definition to be 100% safe
-DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+    # Add this right below the DATABASES definition to be 100% safe
+    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
