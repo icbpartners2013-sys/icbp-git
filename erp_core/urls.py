@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
 from django.http import HttpResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -31,4 +32,6 @@ urlpatterns = [
     path('audit/', include('audit.urls')),
     path('tax/', include('tax.urls')),
     path('ledger/', include('ledger.urls')),
+    path('api/pages/<int:page_id>/save/', views.save_puck_data),
+    path('api/pages/<int:page_id>/content/', views.get_puck_data),
 ]
