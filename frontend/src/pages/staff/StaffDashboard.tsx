@@ -77,7 +77,7 @@ function EngagementsTable() {
 export default function StaffDashboard() {
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="px-8 py-8 max-w-7xl mx-auto">
+      <div className="px-8 py-8 max-w-screen-2xl mx-auto">
         {/* Stat cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           <StatCard title="Billable Hours (Week)" value="32.5" progress={82} valueColor="text-blue-600" />

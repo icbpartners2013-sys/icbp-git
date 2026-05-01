@@ -179,7 +179,7 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="px-8 py-8 max-w-7xl mx-auto">
+      <div className="px-8 py-8 max-w-screen-2xl mx-auto">
 
         {/* Active service packages */}
         <div className="mb-8">

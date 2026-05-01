@@ -35,7 +35,7 @@ export default function DashboardHeader({
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
       <div className="px-6 h-[60px] flex items-center gap-5 relative">
 
-        {/* ── Logo ─────────────────────────────────────────── */}
+        {/* ── Logo ─────────────────────────────────────────── 
         <a href="/" className="shrink-0 flex items-center">
           <img
             src="/logo-dark.jpg"
@@ -46,7 +46,7 @@ export default function DashboardHeader({
               e.currentTarget.src = 'https://ui-avatars.com/api/?name=ICBP&background=1d4ed8&color=fff&size=64';
             }}
           />
-        </a>
+        </a>*/}
 
         {/* ── Portal identity (client portal only) ─────────── */}
         {portalInfo && (
