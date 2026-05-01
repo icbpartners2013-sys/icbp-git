@@ -28,3 +28,13 @@ services:
         value: mongodb+srv://icbpartners2013_db_user:vge7sPGujXVFtp8Y@icbp-mongodb.rbtxg6z.mongodb.net/?appName=icbp-mongodb
       - key: WEB_CONCURRENCY
         value: 4
+
+  - type: web
+    name: icbp-frontend
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
