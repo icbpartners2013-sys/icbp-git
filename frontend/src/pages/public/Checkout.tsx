@@ -1,62 +1,64 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Button, Label, TextInput, Textarea, Card } from 'flowbite-react';
+import { CheckCircle } from 'lucide-react';
 
 export default function Checkout() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const productId = searchParams.get('product');
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleCheckout = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real app, process payment here
-    navigate('/onboarding/forms');
-  };
+  if (submitted) {
+    return (
+      <div className="max-w-lg mx-auto px-6 py-20 text-center">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+          <CheckCircle className="h-8 w-8 text-green-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Request Received!</h2>
+        <p className="text-gray-500 mb-6">
+          Thank you! One of our consultants will contact you within 1 business day.
+        </p>
+        <Button color="blue" href="/">Back to Home</Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <div className="bg-white shadow-lg rounded-xl overflow-hidden">
-        <div className="bg-icbp-dark text-white py-6 px-8">
-          <h1 className="text-2xl font-bold">Checkout</h1>
-          <p className="text-gray-300 text-sm mt-1">Complete your purchase to begin onboarding.</p>
-        </div>
-        
-        <div className="p-8">
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex justify-between items-center">
+    <div className="max-w-2xl mx-auto px-6 py-12">
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">Request a Service</h1>
+      <p className="text-gray-500 mb-8">Fill in your details and we'll get back to you shortly.</p>
+
+      <Card>
+        <form
+          className="space-y-5"
+          onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Selected Service</p>
-              <p className="text-lg font-bold text-icbp-blue-800">{productId ? productId.replace('-', ' ').toUpperCase() : 'Selected Plan'}</p>
+              <div className="mb-2 block"><Label htmlFor="firstName">First Name</Label></div>
+              <TextInput id="firstName" placeholder="John" required />
             </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500 font-medium">Total</p>
-              <p className="text-xl font-bold text-gray-800">$0.00</p>
+            <div>
+              <div className="mb-2 block"><Label htmlFor="lastName">Last Name</Label></div>
+              <TextInput id="lastName" placeholder="Doe" required />
             </div>
           </div>
-
-          <form onSubmit={handleCheckout} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Name on Card</label>
-              <input type="text" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Card Number</label>
-              <input type="text" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="**** **** **** ****" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Expiry</label>
-                <input type="text" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="MM/YY" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">CVC</label>
-                <input type="text" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" placeholder="***" />
-              </div>
-            </div>
-            
-            <button type="submit" className="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition mt-6 shadow-md">
-              Complete Payment & Continue
-            </button>
-          </form>
-        </div>
-      </div>
+          <div>
+            <div className="mb-2 block"><Label htmlFor="email">Email</Label></div>
+            <TextInput id="email" type="email" placeholder="john@example.com" required />
+          </div>
+          <div>
+            <div className="mb-2 block"><Label htmlFor="phone">Phone Number</Label></div>
+            <TextInput id="phone" type="tel" placeholder="+27 XX XXX XXXX" />
+          </div>
+          <div>
+            <div className="mb-2 block"><Label htmlFor="service">Service Required</Label></div>
+            <TextInput id="service" placeholder="e.g. Company Registration, Tax Return" required />
+          </div>
+          <div>
+            <div className="mb-2 block"><Label htmlFor="message">Additional Notes</Label></div>
+            <Textarea id="message" placeholder="Any additional information..." rows={4} />
+          </div>
+          <Button type="submit" color="blue" className="w-full">Submit Request</Button>
+        </form>
+      </Card>
     </div>
   );
 }

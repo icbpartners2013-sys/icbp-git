@@ -1,93 +1,42 @@
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { Button, Card, Badge } from 'flowbite-react';
+
+const services = [
+  { id: 1, name: 'Personal Tax Return (ITR12)', price: 'R1,200', category: 'Tax', description: 'Complete income tax return preparation and submission to SARS.' },
+  { id: 2, name: 'Company Registration (PTY Ltd)', price: 'R2,500', category: 'CIPC', description: 'Full CIPC company registration including MOI and share certificates.' },
+  { id: 3, name: 'Monthly Bookkeeping', price: 'From R1,800/mo', category: 'Bookkeeping', description: 'Full monthly bookkeeping, bank reconciliation, and management reports.' },
+  { id: 4, name: 'VAT Registration & Returns', price: 'R800', category: 'Tax', description: 'SARS VAT vendor registration and ongoing VAT201 submissions.' },
+  { id: 5, name: 'Payroll Processing', price: 'From R650/mo', category: 'Payroll', description: 'Monthly payroll, payslips, EMP201 and EMP501 submissions.' },
+  { id: 6, name: 'Annual Returns (CIPC)', price: 'R450', category: 'CIPC', description: 'CIPC annual return filing to keep your company compliant.' },
+];
+
+const categoryColors: Record<string, string> = {
+  Tax: 'blue', CIPC: 'purple', Bookkeeping: 'green', Payroll: 'yellow',
+};
 
 export default function Shop() {
-  const navigate = useNavigate();
-
-  const handleSelectProduct = (productId: string, price: string) => {
-    navigate(`/checkout?product=${productId}&price=${price}`);
-  };
-
-  const [services, setServices] = useState<any[]>([]);
-
-  useEffect(() => {
-    // Fetch products dynamically from Django API
-    fetch('http://localhost:8000/base/api/services/')
-      .then(res => res.json())
-      .then(data => setServices(data.filter((s: any) => s.is_active)))
-      .catch(err => console.error("Failed to load products", err));
-  }, []);
-
-  const personalServices = services.filter((s: any) => s.category === 'Personal');
-  const businessServices = services.filter((s: any) => s.category === 'Business');
-  const cipcServices = services.filter((s: any) => s.category === 'CIPC');
-
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Select a Service</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Personal Services */}
-        <div className="bg-white shadow-lg rounded-xl p-6 border-t-4 border-blue-500 flex flex-col">
-          <div className="flex items-center gap-3 mb-4 border-b pb-4">
-            <span className="text-3xl">👤</span>
-            <h2 className="text-2xl font-bold text-gray-800">Personal</h2>
-          </div>
-          <div className="space-y-4 flex-1">
-            {personalServices.length === 0 ? <p className="text-sm text-gray-500 italic">No products available.</p> : personalServices.map((srv: any) => (
-              <div key={srv.id} className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition">
-                <h3 className="font-bold text-gray-800">{srv.name}</h3>
-                <p className="text-xs text-gray-600 mt-1 mb-3">{srv.description}</p>
-                <div className="flex justify-between items-center mt-auto">
-                  <span className="font-bold text-lg text-green-600">${parseFloat(srv.price).toFixed(2)}</span>
-                  <button onClick={() => handleSelectProduct(srv.name, srv.price)} className="bg-icbp-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-icbp-blue-700 transition">Select</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-gray-800 mb-3">Service Shop</h1>
+        <p className="text-gray-500 max-w-xl mx-auto">
+          Choose the services your business needs. All pricing is transparent and fixed.
+        </p>
+      </div>
 
-        {/* Business Services */}
-        <div className="bg-white shadow-lg rounded-xl p-6 border-t-4 border-green-500 flex flex-col">
-          <div className="flex items-center gap-3 mb-4 border-b pb-4">
-            <span className="text-3xl">🏢</span>
-            <h2 className="text-2xl font-bold text-gray-800">Business</h2>
-          </div>
-          <div className="space-y-4 flex-1">
-            {businessServices.length === 0 ? <p className="text-sm text-gray-500 italic">No products available.</p> : businessServices.map((srv: any) => (
-              <div key={srv.id} className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition">
-                <h3 className="font-bold text-gray-800">{srv.name}</h3>
-                <p className="text-xs text-gray-600 mt-1 mb-3">{srv.description}</p>
-                <div className="flex justify-between items-center mt-auto">
-                  <span className="font-bold text-lg text-green-600">${parseFloat(srv.price).toFixed(2)}</span>
-                  <button onClick={() => handleSelectProduct(srv.name, srv.price)} className="bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-green-700 transition">Select</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CIPC Services */}
-        <div className="bg-white shadow-lg rounded-xl p-6 border-t-4 border-purple-500 flex flex-col">
-          <div className="flex items-center gap-3 mb-4 border-b pb-4">
-            <span className="text-3xl">⚖️</span>
-            <h2 className="text-2xl font-bold text-gray-800">CIPC / Secretarial</h2>
-          </div>
-          <div className="space-y-4 flex-1">
-            {cipcServices.length === 0 ? <p className="text-sm text-gray-500 italic">No products available.</p> : cipcServices.map((srv: any) => (
-              <div key={srv.id} className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition">
-                <h3 className="font-bold text-gray-800">{srv.name}</h3>
-                <p className="text-xs text-gray-600 mt-1 mb-3">{srv.description}</p>
-                <div className="flex justify-between items-center mt-auto">
-                  <span className="font-bold text-lg text-green-600">${parseFloat(srv.price).toFixed(2)}</span>
-                  <button onClick={() => handleSelectProduct(srv.name, srv.price)} className="bg-purple-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-purple-700 transition">Select</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {services.map(service => (
+          <Card key={service.id} className="flex flex-col h-full hover:shadow-md transition">
+            <div className="flex items-start justify-between mb-3">
+              <Badge color={categoryColors[service.category] || 'gray'}>{service.category}</Badge>
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">{service.name}</h3>
+            <p className="text-gray-500 text-sm flex-1 mb-4">{service.description}</p>
+            <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+              <span className="text-xl font-bold text-blue-600">{service.price}</span>
+              <Button color="blue" size="sm" href="/checkout">Select</Button>
+            </div>
+          </Card>
+        ))}
       </div>
     </div>
   );

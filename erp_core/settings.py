@@ -34,6 +34,15 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django.contrib.sites', # Required by allauth
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.linkedin_oauth2',
     'erp_core',
     'base',
     'audit',
@@ -41,8 +50,53 @@ INSTALLED_APPS = [
     'ledger',
 ]
 
+SITE_ID = 1  # Required by allauth & django.contrib.sites
 AUTH_USER_MODEL = 'base.User'
 TENANT_MODEL = 'base.Tenant'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# ── django-allauth (v0.63+ settings) ─────────────────────────────────────────
+ACCOUNT_EMAIL_VERIFICATION = 'none'           # set to 'mandatory' in production
+ACCOUNT_LOGIN_METHODS = {'email'}             # replaces ACCOUNT_AUTHENTICATION_METHOD
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # replaces EMAIL_REQUIRED / USERNAME_REQUIRED
+ACCOUNT_UNIQUE_EMAIL = True
+
+# Custom adapters for role-based redirect (STAFF → /staff/dashboard, CLIENT → /client/dashboard)
+ACCOUNT_ADAPTER = 'erp_core.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'erp_core.adapters.SocialAccountAdapter'
+
+# After OAuth, our custom view (oauth_complete) issues JWTs and redirects to React
+LOGIN_REDIRECT_URL = '/accounts/oauth-complete/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/login'
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Skip allauth's "do you want to connect?" page
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID', ''),
+            'secret':    os.environ.get('GOOGLE_CLIENT_SECRET', ''),
+            'key':       '',
+        },
+    },
+    'linkedin_oauth2': {
+        'SCOPE': ['r_liteprofile', 'r_emailaddress'],
+        'PROFILE_FIELDS': ['id', 'firstName', 'lastName', 'emailAddress'],
+        'APP': {
+            'client_id': os.environ.get('LINKEDIN_CLIENT_ID', ''),
+            'secret':    os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
+            'key':       '',
+        },
+    },
+}
+
+# dj-rest-auth uses JWT
+REST_USE_JWT = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -65,6 +119,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Required by allauth
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True 

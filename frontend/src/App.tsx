@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 // Layouts
 import MainLayout from './layouts/MainLayout';
+import ClientLayout from './layouts/ClientLayout';
+import StaffLayout from './layouts/StaffLayout';
 
 // Public Pages
 import Login from './pages/public/Login';
@@ -17,7 +19,7 @@ import OnboardingForms from './pages/client/OnboardingForms';
 // Staff Pages
 import StaffDashboard from './pages/staff/StaffDashboard';
 
-// --- AUTO GENERATED ROUTES ---
+// --- CLIENT: Personal Tax ---
 import IncomeTax from './pages/client/personal/IncomeTax';
 import ProvisionalTax from './pages/client/personal/ProvisionalTax';
 import WealthEstate from './pages/client/personal/WealthEstate';
@@ -26,6 +28,8 @@ import ExpatTax from './pages/client/personal/ExpatTax';
 import Retirement from './pages/client/personal/Retirement';
 import DebtManagement from './pages/client/personal/DebtManagement';
 import DeceasedEstate from './pages/client/personal/DeceasedEstate';
+
+// --- CLIENT: Business Services ---
 import Bookkeeping from './pages/client/business/Bookkeeping';
 import Audit from './pages/client/business/Audit';
 import IndependentReview from './pages/client/business/IndependentReview';
@@ -37,6 +41,8 @@ import CompanySecretarial from './pages/client/business/CompanySecretarial';
 import Bbbee from './pages/client/business/Bbbee';
 import BusinessRescue from './pages/client/business/BusinessRescue';
 import Coida from './pages/client/business/Coida';
+
+// --- CLIENT: CIPC ---
 import CompanyRegistration from './pages/client/cipc/CompanyRegistration';
 import AnnualReturns from './pages/client/cipc/AnnualReturns';
 import NameReservation from './pages/client/cipc/NameReservation';
@@ -57,6 +63,8 @@ import ShareCertificates from './pages/client/cipc/ShareCertificates';
 import ShareTransfers from './pages/client/cipc/ShareTransfers';
 import Trademark from './pages/client/cipc/Trademark';
 import Patent from './pages/client/cipc/Patent';
+
+// --- CLIENT: Features ---
 import Documents from './pages/client/features/Documents';
 import Signatures from './pages/client/features/Signatures';
 import Messages from './pages/client/features/Messages';
@@ -64,6 +72,8 @@ import Billing from './pages/client/features/Billing';
 import Reminders from './pages/client/features/Reminders';
 import MobileScanner from './pages/client/features/MobileScanner';
 import Tasks from './pages/client/features/Tasks';
+
+// --- STAFF: Features ---
 import TimeTracking from './pages/staff/features/TimeTracking';
 import Expenses from './pages/staff/features/Expenses';
 import Directory from './pages/staff/features/Directory';
@@ -94,116 +104,136 @@ import Performance from './pages/staff/features/Performance';
 import ApplicantTracking from './pages/staff/features/ApplicantTracking';
 import ProductsManagement from './pages/staff/features/ProductsManagement';
 
+// Auth
+import Register from './pages/public/Register';
+import OAuthCallback from './pages/OAuthCallback';
+
 export default function App() {
   const [token] = useState<string | null>(localStorage.getItem('access_token'));
 
-  // A simple auth guard wrapper
   const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-    if (!token) {
-      return <Navigate to="/login" />;
-    }
-    return children;
+    if (!token) return <Navigate to="/login" replace />;
+    return <>{children}</>;
   };
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
-        
+        {/* ── Auth (no layout) ───────────────────────────────────── */}
+        <Route path="/login" element={!token ? <Login /> : <Navigate to="/" replace />} />
+        <Route path="/register" element={!token ? <Register /> : <Navigate to="/" replace />} />
+        <Route path="/oauth-callback" element={<OAuthCallback />} />
+
+        {/* ── Main layout (top navbar + footer) — public pages only ── */}
         <Route element={<MainLayout />}>
-          
-          {/* Public / Semi-Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} /> 
+          <Route path="/home" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/checkout" element={<Checkout />} />
-          
-          {/* Client Routes */}
-          <Route path="/client/dashboard" element={<RequireAuth><ClientDashboard /></RequireAuth>} />
-          <Route path="/onboarding/forms" element={<RequireAuth><OnboardingForms /></RequireAuth>} />
-          
-          {/* Staff Routes */}
-          <Route path="/staff/dashboard" element={<RequireAuth><StaffDashboard /></RequireAuth>} />
-          
-          {/* AUTO GENERATED CLIENT ROUTES */}
-          <Route path="/client/personal/income-tax" element={<RequireAuth><IncomeTax /></RequireAuth>} />
-          <Route path="/client/personal/provisional-tax" element={<RequireAuth><ProvisionalTax /></RequireAuth>} />
-          <Route path="/client/personal/wealth-estate" element={<RequireAuth><WealthEstate /></RequireAuth>} />
-          <Route path="/client/personal/trust-admin" element={<RequireAuth><TrustAdmin /></RequireAuth>} />
-          <Route path="/client/personal/expat-tax" element={<RequireAuth><ExpatTax /></RequireAuth>} />
-          <Route path="/client/personal/retirement" element={<RequireAuth><Retirement /></RequireAuth>} />
-          <Route path="/client/personal/debt-management" element={<RequireAuth><DebtManagement /></RequireAuth>} />
-          <Route path="/client/personal/deceased-estate" element={<RequireAuth><DeceasedEstate /></RequireAuth>} />
-          <Route path="/client/business/bookkeeping" element={<RequireAuth><Bookkeeping /></RequireAuth>} />
-          <Route path="/client/business/audit" element={<RequireAuth><Audit /></RequireAuth>} />
-          <Route path="/client/business/independent-review" element={<RequireAuth><IndependentReview /></RequireAuth>} />
-          <Route path="/client/business/corporate-tax" element={<RequireAuth><CorporateTax /></RequireAuth>} />
-          <Route path="/client/business/vat-gst" element={<RequireAuth><VatGst /></RequireAuth>} />
-          <Route path="/client/business/payroll" element={<RequireAuth><Payroll /></RequireAuth>} />
-          <Route path="/client/business/management-reporting" element={<RequireAuth><ManagementReporting /></RequireAuth>} />
-          <Route path="/client/business/company-secretarial" element={<RequireAuth><CompanySecretarial /></RequireAuth>} />
-          <Route path="/client/business/bbbee" element={<RequireAuth><Bbbee /></RequireAuth>} />
-          <Route path="/client/business/business-rescue" element={<RequireAuth><BusinessRescue /></RequireAuth>} />
-          <Route path="/client/business/coida" element={<RequireAuth><Coida /></RequireAuth>} />
-          <Route path="/client/cipc/registration" element={<RequireAuth><CompanyRegistration /></RequireAuth>} />
-          <Route path="/client/cipc/annual-returns" element={<RequireAuth><AnnualReturns /></RequireAuth>} />
-          <Route path="/client/cipc/name-reservation" element={<RequireAuth><NameReservation /></RequireAuth>} />
-          <Route path="/client/cipc/shelf-company" element={<RequireAuth><ShelfCompany /></RequireAuth>} />
-          <Route path="/client/cipc/reinstatement" element={<RequireAuth><Reinstatement /></RequireAuth>} />
-          <Route path="/client/cipc/deregistration" element={<RequireAuth><Deregistration /></RequireAuth>} />
-          <Route path="/client/cipc/director-amendments" element={<RequireAuth><DirectorAmendments /></RequireAuth>} />
-          <Route path="/client/cipc/director-details" element={<RequireAuth><DirectorDetails /></RequireAuth>} />
-          <Route path="/client/cipc/officer-changes" element={<RequireAuth><OfficerChanges /></RequireAuth>} />
-          <Route path="/client/cipc/public-officer" element={<RequireAuth><PublicOfficer /></RequireAuth>} />
-          <Route path="/client/cipc/beneficial-ownership" element={<RequireAuth><BeneficialOwnership /></RequireAuth>} />
-          <Route path="/client/cipc/compliance-checklist" element={<RequireAuth><ComplianceChecklist /></RequireAuth>} />
-          <Route path="/client/cipc/moi-amendments" element={<RequireAuth><MoiAmendments /></RequireAuth>} />
-          <Route path="/client/cipc/fas" element={<RequireAuth><Fas /></RequireAuth>} />
-          <Route path="/client/cipc/address-changes" element={<RequireAuth><AddressChanges /></RequireAuth>} />
-          <Route path="/client/cipc/securities-register" element={<RequireAuth><SecuritiesRegister /></RequireAuth>} />
-          <Route path="/client/cipc/share-certificates" element={<RequireAuth><ShareCertificates /></RequireAuth>} />
-          <Route path="/client/cipc/share-transfers" element={<RequireAuth><ShareTransfers /></RequireAuth>} />
-          <Route path="/client/cipc/trademark" element={<RequireAuth><Trademark /></RequireAuth>} />
-          <Route path="/client/cipc/patent" element={<RequireAuth><Patent /></RequireAuth>} />
-          <Route path="/client/documents" element={<RequireAuth><Documents /></RequireAuth>} />
-          <Route path="/client/signatures" element={<RequireAuth><Signatures /></RequireAuth>} />
-          <Route path="/client/messages" element={<RequireAuth><Messages /></RequireAuth>} />
-          <Route path="/client/billing" element={<RequireAuth><Billing /></RequireAuth>} />
-          <Route path="/client/reminders" element={<RequireAuth><Reminders /></RequireAuth>} />
-          <Route path="/client/mobile-scanner" element={<RequireAuth><MobileScanner /></RequireAuth>} />
-          <Route path="/client/tasks" element={<RequireAuth><Tasks /></RequireAuth>} />
-          
-          {/* AUTO GENERATED STAFF ROUTES */}
-          <Route path="/staff/products" element={<RequireAuth><ProductsManagement /></RequireAuth>} />
-          <Route path="/staff/time-tracking" element={<RequireAuth><TimeTracking /></RequireAuth>} />
-          <Route path="/staff/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
-          <Route path="/staff/directory" element={<RequireAuth><Directory /></RequireAuth>} />
-          <Route path="/staff/cpe" element={<RequireAuth><Cpe /></RequireAuth>} />
-          <Route path="/staff/knowledge-base" element={<RequireAuth><KnowledgeBase /></RequireAuth>} />
-          <Route path="/staff/leave" element={<RequireAuth><Leave /></RequireAuth>} />
-          <Route path="/staff/workflow" element={<RequireAuth><Workflow /></RequireAuth>} />
-          <Route path="/staff/dms" element={<RequireAuth><Dms /></RequireAuth>} />
-          <Route path="/staff/communications" element={<RequireAuth><Communications /></RequireAuth>} />
-          <Route path="/staff/software-integration" element={<RequireAuth><SoftwareIntegration /></RequireAuth>} />
-          <Route path="/staff/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
-          <Route path="/staff/e-signatures" element={<RequireAuth><ESignatures /></RequireAuth>} />
-          <Route path="/staff/project-oversight" element={<RequireAuth><ProjectOversight /></RequireAuth>} />
-          <Route path="/staff/resource-allocation" element={<RequireAuth><ResourceAllocation /></RequireAuth>} />
-          <Route path="/staff/budget" element={<RequireAuth><Budget /></RequireAuth>} />
-          <Route path="/staff/wip" element={<RequireAuth><Wip /></RequireAuth>} />
-          <Route path="/staff/review-queue" element={<RequireAuth><ReviewQueue /></RequireAuth>} />
-          <Route path="/staff/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
-          <Route path="/staff/financials" element={<RequireAuth><Financials /></RequireAuth>} />
-          <Route path="/staff/aged-receivables" element={<RequireAuth><AgedReceivables /></RequireAuth>} />
-          <Route path="/staff/utilization" element={<RequireAuth><Utilization /></RequireAuth>} />
-          <Route path="/staff/write-offs" element={<RequireAuth><WriteOffs /></RequireAuth>} />
-          <Route path="/staff/strategic-planning" element={<RequireAuth><StrategicPlanning /></RequireAuth>} />
-          <Route path="/staff/provisioning" element={<RequireAuth><Provisioning /></RequireAuth>} />
-          <Route path="/staff/security-logs" element={<RequireAuth><SecurityLogs /></RequireAuth>} />
-          <Route path="/staff/payroll-processing" element={<RequireAuth><PayrollProcessing /></RequireAuth>} />
-          <Route path="/staff/performance" element={<RequireAuth><Performance /></RequireAuth>} />
-          <Route path="/staff/applicant-tracking" element={<RequireAuth><ApplicantTracking /></RequireAuth>} />
         </Route>
+
+        {/* ── Client portal — no top navbar, sidebar only ─────────── */}
+        <Route element={<RequireAuth><ClientLayout /></RequireAuth>}>
+            <Route path="/client/dashboard" element={<ClientDashboard />} />
+            <Route path="/onboarding/forms" element={<OnboardingForms />} />
+
+            {/* Personal Tax */}
+            <Route path="/client/personal/income-tax" element={<IncomeTax />} />
+            <Route path="/client/personal/provisional-tax" element={<ProvisionalTax />} />
+            <Route path="/client/personal/wealth-estate" element={<WealthEstate />} />
+            <Route path="/client/personal/trust-admin" element={<TrustAdmin />} />
+            <Route path="/client/personal/expat-tax" element={<ExpatTax />} />
+            <Route path="/client/personal/retirement" element={<Retirement />} />
+            <Route path="/client/personal/debt-management" element={<DebtManagement />} />
+            <Route path="/client/personal/deceased-estate" element={<DeceasedEstate />} />
+
+            {/* Business Services */}
+            <Route path="/client/business/bookkeeping" element={<Bookkeeping />} />
+            <Route path="/client/business/audit" element={<Audit />} />
+            <Route path="/client/business/independent-review" element={<IndependentReview />} />
+            <Route path="/client/business/corporate-tax" element={<CorporateTax />} />
+            <Route path="/client/business/vat-gst" element={<VatGst />} />
+            <Route path="/client/business/payroll" element={<Payroll />} />
+            <Route path="/client/business/management-reporting" element={<ManagementReporting />} />
+            <Route path="/client/business/company-secretarial" element={<CompanySecretarial />} />
+            <Route path="/client/business/bbbee" element={<Bbbee />} />
+            <Route path="/client/business/business-rescue" element={<BusinessRescue />} />
+            <Route path="/client/business/coida" element={<Coida />} />
+
+            {/* CIPC Services */}
+            <Route path="/client/cipc/registration" element={<CompanyRegistration />} />
+            <Route path="/client/cipc/annual-returns" element={<AnnualReturns />} />
+            <Route path="/client/cipc/name-reservation" element={<NameReservation />} />
+            <Route path="/client/cipc/shelf-company" element={<ShelfCompany />} />
+            <Route path="/client/cipc/reinstatement" element={<Reinstatement />} />
+            <Route path="/client/cipc/deregistration" element={<Deregistration />} />
+            <Route path="/client/cipc/director-amendments" element={<DirectorAmendments />} />
+            <Route path="/client/cipc/director-details" element={<DirectorDetails />} />
+            <Route path="/client/cipc/officer-changes" element={<OfficerChanges />} />
+            <Route path="/client/cipc/public-officer" element={<PublicOfficer />} />
+            <Route path="/client/cipc/beneficial-ownership" element={<BeneficialOwnership />} />
+            <Route path="/client/cipc/compliance-checklist" element={<ComplianceChecklist />} />
+            <Route path="/client/cipc/moi-amendments" element={<MoiAmendments />} />
+            <Route path="/client/cipc/fas" element={<Fas />} />
+            <Route path="/client/cipc/address-changes" element={<AddressChanges />} />
+            <Route path="/client/cipc/securities-register" element={<SecuritiesRegister />} />
+            <Route path="/client/cipc/share-certificates" element={<ShareCertificates />} />
+            <Route path="/client/cipc/share-transfers" element={<ShareTransfers />} />
+            <Route path="/client/cipc/trademark" element={<Trademark />} />
+            <Route path="/client/cipc/patent" element={<Patent />} />
+
+            {/* Client Features */}
+            <Route path="/client/documents" element={<Documents />} />
+            <Route path="/client/signatures" element={<Signatures />} />
+            <Route path="/client/messages" element={<Messages />} />
+            <Route path="/client/billing" element={<Billing />} />
+            <Route path="/client/reminders" element={<Reminders />} />
+            <Route path="/client/mobile-scanner" element={<MobileScanner />} />
+            <Route path="/client/tasks" element={<Tasks />} />
+          </Route>
+
+          {/* ── Staff portal (sidebar = purple) ─────────────────── */}
+          <Route element={<RequireAuth><StaffLayout /></RequireAuth>}>
+            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+
+            {/* Practice Management */}
+            <Route path="/staff/time-tracking" element={<TimeTracking />} />
+            <Route path="/staff/expenses" element={<Expenses />} />
+            <Route path="/staff/wip" element={<Wip />} />
+            <Route path="/staff/write-offs" element={<WriteOffs />} />
+            <Route path="/staff/budget" element={<Budget />} />
+            <Route path="/staff/review-queue" element={<ReviewQueue />} />
+            <Route path="/staff/workflow" element={<Workflow />} />
+            <Route path="/staff/utilization" element={<Utilization />} />
+            <Route path="/staff/aged-receivables" element={<AgedReceivables />} />
+
+            {/* Client & Engagements */}
+            <Route path="/staff/financials" element={<Financials />} />
+            <Route path="/staff/project-oversight" element={<ProjectOversight />} />
+            <Route path="/staff/provisioning" element={<Provisioning />} />
+            <Route path="/staff/resource-allocation" element={<ResourceAllocation />} />
+            <Route path="/staff/strategic-planning" element={<StrategicPlanning />} />
+
+            {/* HR & People */}
+            <Route path="/staff/directory" element={<Directory />} />
+            <Route path="/staff/leave" element={<Leave />} />
+            <Route path="/staff/performance" element={<Performance />} />
+            <Route path="/staff/onboarding" element={<Onboarding />} />
+            <Route path="/staff/applicant-tracking" element={<ApplicantTracking />} />
+            <Route path="/staff/cpe" element={<Cpe />} />
+            <Route path="/staff/payroll-processing" element={<PayrollProcessing />} />
+
+            {/* Tools */}
+            <Route path="/staff/dms" element={<Dms />} />
+            <Route path="/staff/communications" element={<Communications />} />
+            <Route path="/staff/e-signatures" element={<ESignatures />} />
+            <Route path="/staff/knowledge-base" element={<KnowledgeBase />} />
+            <Route path="/staff/software-integration" element={<SoftwareIntegration />} />
+            <Route path="/staff/analytics" element={<Analytics />} />
+            <Route path="/staff/security-logs" element={<SecurityLogs />} />
+            <Route path="/staff/products" element={<ProductsManagement />} />
+          </Route>
+
       </Routes>
     </Router>
   );

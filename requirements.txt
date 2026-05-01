@@ -6,6 +6,11 @@ psycopg2-binary>=2.9
 gunicorn>=21.2
 dj-database-url>=2.1
 python-dotenv>=1.0
+# Social auth / OAuth
+django-allauth>=0.63
+dj-rest-auth>=6.0
+requests>=2.31
+cryptography>=41.0
 -e ./my_django_packages/django-audit
 -e ./my_django_packages/django-tax
 -e ./my_django_packages/django-base

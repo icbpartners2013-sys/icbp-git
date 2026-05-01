@@ -1,12 +1,35 @@
 @import "tailwindcss";
 
+@source "../node_modules/flowbite-react";
+
 @theme {
-  --color-icbp-dark: #02255A;       /* Your primary deep navy */
-  --color-icbp-blue-400: #639EF6;  /* Vibrant sky accent */
-  --color-icbp-blue-500: #3883F4;  /* Standard UI blue */
-  --color-icbp-blue-600: #2172ED;  /* Interactive state blue */
-  --color-icbp-blue-700: #1866DC;  /* Darker interactive blue */
-  --color-icbp-blue-800: #1E57AD;  /* Muted navy-blue */
-  --color-icbp-gray-50: #F9F9FA;   /* Clean off-white background */
+  --color-icbp-dark: #02255A;
+  --color-icbp-blue-400: #639EF6;
+  --color-icbp-blue-500: #3883F4;
+  --color-icbp-blue-600: #2172ED;
+  --color-icbp-blue-700: #1866DC;
+  --color-icbp-blue-800: #1E57AD;
+  --color-icbp-gray-50: #F9F9FA;
 }
-  
+
+/* ── Sleek modern scrollbar ───────────────────────────────────────────────────
+   Thin, rounded, nearly-invisible until hovered.
+   Works on Chrome / Safari / Edge (webkit) + Firefox.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Global — light surfaces */
+::-webkit-scrollbar          { width: 4px; height: 4px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: rgba(148,163,184,.30); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,.60); }
+::-webkit-scrollbar-corner   { background: transparent; }
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148,163,184,.30) transparent;
+}
+
+/* Sidebar — dark surface variant */
+.scrollbar-dark::-webkit-scrollbar-thumb      { background: rgba(71,85,105,.45); }
+.scrollbar-dark::-webkit-scrollbar-thumb:hover{ background: rgba(100,116,139,.75); }
