@@ -85,21 +85,11 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     },
     'linkedin_oauth2': {
-        'SCOPE': [
-            'openid',
-            'profile',
-            'email',
-        ],
-        'PROFILE_FIELDS': [
-            'id',
-            'first_name',
-            'last_name',
-            'email',
-        ],
+        'SCOPE': ['openid', 'profile', 'email'],
         'APP': {
             'client_id': os.environ.get('LINKEDIN_CLIENT_ID', ''),
-            'secret': os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
-            'key': '',
+            'secret':    os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
+            'key':       '',
         },
     },
 
