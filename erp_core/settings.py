@@ -85,14 +85,24 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     },
     'linkedin_oauth2': {
-        'SCOPE': ['r_liteprofile', 'r_emailaddress'],
-        'PROFILE_FIELDS': ['id', 'firstName', 'lastName', 'emailAddress'],
+        'SCOPE': [
+            'openid',
+            'profile',
+            'email',
+        ],
+        'PROFILE_FIELDS': [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+        ],
         'APP': {
             'client_id': os.environ.get('LINKEDIN_CLIENT_ID', ''),
-            'secret':    os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
-            'key':       '',
+            'secret': os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
+            'key': '',
         },
     },
+
 }
 
 # dj-rest-auth uses JWT
