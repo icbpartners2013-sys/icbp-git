@@ -88,13 +88,13 @@ SOCIALACCOUNT_PROVIDERS = {
         'APPS': [
             {
                 # LinkedIn OIDC — discovery doc at:
-                # https://www.linkedin.com/.well-known/openid-configuration
+                # https://www.linkedin.com/oauth/.well-known/openid-configuration
                 'provider_id': 'linkedin',
                 'name': 'LinkedIn',
                 'client_id': os.environ.get('LINKEDIN_CLIENT_ID', ''),
                 'secret':    os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
                 'settings': {
-                    'server_url': 'https://www.linkedin.com',
+                    'server_url': 'https://www.linkedin.com/oauth',
                 },
             },
         ],
