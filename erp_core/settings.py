@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.linkedin_oauth2',
+    'allauth.socialaccount.providers.openid_connect',
     'erp_core',
     'base',
     'audit',
@@ -80,20 +80,25 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'access_type': 'online'},
         'APP': {
             'client_id': os.environ.get('GOOGLE_CLIENT_ID', ''),
-            'secret':    os.environ.get('GOOGLE_CLIENT_SECRET', ''),
-            'key':       '',
+            'secret': os.environ.get('GOOGLE_CLIENT_SECRET', ''),
+            'key': '',
         },
     },
-    'linkedin_oauth2': {
-        'SCOPE': ['openid', 'profile', 'email'],
-        'APP': {
-            'client_id': os.environ.get('LINKEDIN_CLIENT_ID', ''),
-            'secret':    os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
-            'key':       '',
-        },
+    'openid_connect': {
+        'APPS': [
+            {
+                'provider_id': 'linkedin',
+                'name': 'LinkedIn',
+                'client_id': os.environ.get('LINKEDIN_CLIENT_ID', ''),
+                'secret': os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
+                'settings': {
+                    'server_url': 'https://linkedin.com',
+                },
+            }
+        ]
     },
-
 }
+
 
 # dj-rest-auth uses JWT
 REST_USE_JWT = True
