@@ -72,8 +72,10 @@ SOCIALACCOUNT_ADAPTER = 'erp_core.adapters.SocialAccountAdapter'
 # After OAuth, our custom view (oauth_complete) issues JWTs and redirects to React
 LOGIN_REDIRECT_URL = '/accounts/oauth-complete/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/login'
-SOCIALACCOUNT_LOGIN_ON_GET = True   # Skip allauth's "do you want to connect?" page
-SOCIALACCOUNT_AUTO_SIGNUP = True    # Skip the email-confirmation sign-up form for new social logins
+SOCIALACCOUNT_LOGIN_ON_GET = True                       # Skip allauth's "do you want to connect?" page
+SOCIALACCOUNT_AUTO_SIGNUP = True                        # Skip the sign-up confirmation form
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True               # Allow sign-in via social-account email
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True  # Auto-connect social account to existing user
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
