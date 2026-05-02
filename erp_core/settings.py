@@ -87,15 +87,17 @@ SOCIALACCOUNT_PROVIDERS = {
     'openid_connect': {
         'APPS': [
             {
+                # LinkedIn OIDC — discovery doc at:
+                # https://www.linkedin.com/.well-known/openid-configuration
                 'provider_id': 'linkedin',
                 'name': 'LinkedIn',
                 'client_id': os.environ.get('LINKEDIN_CLIENT_ID', ''),
-                'secret': os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
+                'secret':    os.environ.get('LINKEDIN_CLIENT_SECRET', ''),
                 'settings': {
-                    'server_url': 'https://linkedin.com',
+                    'server_url': 'https://www.linkedin.com',
                 },
-            }
-        ]
+            },
+        ],
     },
 }
 
@@ -148,8 +150,9 @@ TEMPLATES = [
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Secure cookies: True in production (HTTPS), False in local dev (HTTP)
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 WSGI_APPLICATION = 'erp_core.wsgi.application'
 

@@ -5,19 +5,20 @@
  * Backend must have django-allauth (or social-django) configured with
  * Google and LinkedIn providers.
  *
- * Typical endpoints:
- *   Google:   /api/auth/social/google/login/
- *   LinkedIn: /api/auth/social/linkedin_oauth2/login/
+ * Endpoints (django-allauth):
+ *   Google:   /accounts/google/login/           (allauth google provider)
+ *   LinkedIn: /accounts/oidc/linkedin/login/    (allauth generic OIDC provider)
  *
- * After successful OAuth, the backend should set the JWT tokens and
- * redirect back to /client/dashboard (or a configurable next URL).
+ * After successful OAuth the backend issues JWT tokens via /accounts/oauth-complete/
+ * and redirects to the React OAuthCallback page.
  */
 
 import { backendUrl } from '../utils/api';
 
-// These match the django-allauth URL patterns registered at path('accounts/', include('allauth.urls'))
+// Google — standard allauth provider
 const GOOGLE_OAUTH_URL = backendUrl('/accounts/google/login/');
-const LINKEDIN_OAUTH_URL = backendUrl('/accounts/linkedin_oauth2/login/');
+// LinkedIn — allauth generic OIDC provider (provider_id: 'linkedin')
+const LINKEDIN_OAUTH_URL = backendUrl('/accounts/oidc/linkedin/login/');
 
 interface SocialLoginButtonsProps {
   mode?: 'signin' | 'signup';
