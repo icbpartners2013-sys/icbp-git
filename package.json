@@ -1,5 +1,12 @@
 {
+  "name": "icbp-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "build": "cd frontend && npm install && npm run build"
+  },
   "dependencies": {
+    "express": "^4.21.0",
     "flowbite": "^4.0.1",
     "flowbite-react": "^0.12.17"
   }
